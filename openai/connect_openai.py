@@ -19,4 +19,4 @@ def call_gpt(prompt):
     return completions.choices[0].message.content
 
 
-call_gpt("Liste os filmes e as séries protagonizadas por David Tennant.")
+call_gpt("Diga Hello World.")
