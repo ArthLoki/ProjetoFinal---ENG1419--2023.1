@@ -2,14 +2,17 @@
 from gtts import gTTS
 import pyttsx3
 import fakeyou
+import tempfile
 from dotenv import load_dotenv
 import os
-import requests, json
 
 load_dotenv()
 
 username = os.getenv("USER_FAKEYOU")
 password = os.getenv("PASSWORD_FAKEYOU")
+
+fy = fakeyou.FakeYou()
+fy.login(username,password)
 
 '''
 OPÇÕES DE TEXT TO SPEECH (TTS):
@@ -20,29 +23,47 @@ OPÇÕES DE TEXT TO SPEECH (TTS):
 4. FakeYou (https://fakeyou.com)
 '''
 
-def getAudioFromFakeyou(requests):
-    response = requests.get('https://fakeyou.com/profile/' + username, auth=('username', 'password'))
-    return
+def get_tts_token(model_name):
+    voices = fy.list_voices()
 
-def getVoice_fakeyou(responseChatGPT):
-    fy=fakeyou.FakeYou(verbose=False)
-    fy.login(username,password)
+    json_data = []
 
-    # voices=fy.list_voices(size=100)
+    for json_archive in zip(voices.json):
+        json_data.append(json_archive[0])
 
-    # for title,creator in zip(voices.title,voices.creatorUsername):
-    #     # if ("Brazilian Portuguese" in title):
-    #     print(title,creator)
+    for i in range(len(json_data)):
+        data = json_data[i]
+        if (data['ietf_primary_language_subtag'] == 'pt'):
+            if (model_name.lower() == data['title'] or model_name.lower() == data['maybe_suggested_unique_bot_command']):
+                return data['model_token']
+    return ''
 
+def getFilePathFakeyou(model_name):
+    # base path
+    base = 'voiceFiles/fakeyou/'
 
-    # categories=fy.list_voice_categories()
+    # filename
+    lNames = model_name.split(' ')
+    filename = ''
+    for i in range(len(lNames)):
+        if i < len(lNames) - 1:
+            filename += (lNames[i].lower() + '_')
+        else:
+            filename += (lNames[i].lower() + '.wav')
 
-    # for name,token in zip(categories.name,categories.categoryToken):
-    #     print(name,token)
+    filePath = base + filename
+    return filePath
 
+def getVoice_fakeyou(responseChatGPT, model_name):
     try:
-        # fy.say(text=responseChatGPT,ttsModelToken="TM:7wbtjphx8h8v")
-        fy.say(text="It's a me, Mario!",ttsModelToken="TM:7wbtjphx8h8v")
+        temp_file = tempfile.mkdtemp()
+        filename = os.path.join(temp_file, model_name.lower() + '.wav')
+        tts_model_token = get_tts_token(model_name)
+        # print(tts_model_token)
+        if tts_model_token != '':
+            fy.say(text="It's a me, Mario!", ttsModelToken=tts_model_token)
+            # fy.say(text=responseChatGPT,ttsModelToken=tts_model_token, filename=filename)
+            print("Voz salva\n")
     except fakeyou.exception.TooManyRequests:
         print("Cool down")
     return
@@ -58,7 +79,7 @@ def getVoice_pyttsx3(responseChatGPT):
 
     """VOICE"""
     voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[1].id)
+    engine.setProperty('voice', voices[2].id)
 
     ## Save into a file
     engine.save_to_file(responseChatGPT, 'voiceFiles/person/person.mp3')
@@ -69,24 +90,25 @@ def getVoice_pyttsx3(responseChatGPT):
     return
 
 def getVoice_gtts(responseChatGPT):
-    tts = gTTS(text=responseChatGPT, lang='en')
+    tts = gTTS(text=responseChatGPT, lang='pt')
     tts.save("voiceFiles/robot/robot.mp3")
     return
-
 
 def text2voice(prompt):
 
     # get text answer from chatGPT
     # respostaChatGPT = call_gpt(prompt)
 
-    responseChatGPT = "Hello World"
+    responseChatGPT = "Olá mundo"
 
     # convert text to voice
-    getVoice_fakeyou(responseChatGPT)
+    getVoice_fakeyou(responseChatGPT, 'xuxa')
 
-    getVoice_pyttsx3(responseChatGPT)
+    # getVoiceTextToSpeech(responseChatGPT)
 
-    getVoice_gtts(responseChatGPT)
+    # getVoice_pyttsx3(responseChatGPT)
+
+    # getVoice_gtts(responseChatGPT)
 
 
     return
@@ -94,6 +116,5 @@ def text2voice(prompt):
 def testeText2VoiceSemPrompt():
     text2voice('')
     return
-
 
 testeText2VoiceSemPrompt()
