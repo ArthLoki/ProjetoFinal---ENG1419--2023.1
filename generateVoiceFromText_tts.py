@@ -26,7 +26,7 @@ fy.login(username, password)
 # 1. gtts (OK)
 def getVoice_gtts(responseChatGPT):
     tts = gTTS(text=responseChatGPT, lang='pt')
-    tts.save("voiceFiles/robot/robot.mp3")
+    tts.save("voiceFiles/robot.mp3")
     return
 
 # 2. pyttsx3 (OK)
@@ -44,7 +44,7 @@ def getVoice_pyttsx3(responseChatGPT):
     engine.setProperty('voice', voices[2].id)
 
     ## Save into a file
-    engine.save_to_file(responseChatGPT, 'voiceFiles/person/person.mp3')
+    engine.save_to_file(responseChatGPT, 'voiceFiles/person.mp3')
 
     ## DO NOT DELETE
     engine.runAndWait()
@@ -108,7 +108,7 @@ def getFilePathFakeyou():  # OK!
     current_path = (os.getcwd()).replace('\\', '/')
 
     # base path
-    complement = '/voiceFiles/fakeyou/'
+    complement = '/voiceFiles/'
 
     # filePath
     return current_path + complement
@@ -159,7 +159,7 @@ def downloadVoiceFromFakeyou(responseChatGPT, tts_model_token):
 def getVoice_fakeyou(responseChatGPT, tts_model_token):  # It doesn't work
     try:
         fy.say(text=responseChatGPT,ttsModelToken=tts_model_token)
-        downloadVoiceFromFakeyou("It's a me, Mario!", tts_model_token)
+        downloadVoiceFromFakeyou(responseChatGPT, tts_model_token)
     except fakeyou.exception.TooManyRequests:
         print("Cool down")
     return
