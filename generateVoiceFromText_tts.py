@@ -62,7 +62,7 @@ def get_tts_token(model_name):  # OK!
     for i in range(len(json_data)):
         data = json_data[i]
         if (data['ietf_primary_language_subtag'] == 'pt'):
-            if (model_name.lower() == data['title'] or model_name.lower() == data['maybe_suggested_unique_bot_command']):
+            if (model_name.lower() == data['title'].lower() or model_name.lower() == data['maybe_suggested_unique_bot_command']):
                 return data['model_token']
     return ''
 
@@ -164,16 +164,16 @@ def getVoice_fakeyou(responseChatGPT, tts_model_token):  # It doesn't work
         print("Cool down")
     return
 
-# Conversion according to the question and chosen character
+# Conversion according to the question/prompt and chosen character
 def text2voice(prompt, character):
 
     # get text response from chatGPT
     responseChatGPT = call_gpt(prompt)
 
     # convert text to voice
-    if (character == 'robo'):
+    if (character == 'Robo'):
         getVoice_gtts(responseChatGPT)
-    elif (character == 'pessoa'):
+    elif (character == 'Mulher 1'):
         getVoice_pyttsx3(responseChatGPT)
     else:
         # get tts_model_token

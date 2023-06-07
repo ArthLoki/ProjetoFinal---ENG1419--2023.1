@@ -3,6 +3,9 @@ from pygame import mixer
 def observeFolderChanges():
     return
 
+def getNewerVoiceFile():
+    return
+
 def playAudio(audio):
     mixer.init()
     mixer.music.load("voiceFiles/" + audio)
