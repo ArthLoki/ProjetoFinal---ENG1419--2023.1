@@ -1,9 +1,20 @@
-# from openai.connect_openai import call_gpt
+'''
+OPÇÕES DE TEXT TO SPEECH (TTS):
+
+1. Google Text to Speech (gtts)
+2. pyttsx3
+3. FakeYou (https://fakeyou.com)
+'''
+
+# from connect_openai import call_gpt
 from gtts import gTTS
 import pyttsx3
+import fakeyou.objects as objects
 import fakeyou
 from dotenv import load_dotenv
 import os
+import requests, json
+from pyhelpers.ops import is_downloadable
 
 load_dotenv()
 
@@ -13,13 +24,7 @@ password = os.getenv("PASSWORD_FAKEYOU")
 fy = fakeyou.FakeYou(verbose=True)
 fy.login(username, password)
 
-'''
-OPÇÕES DE TEXT TO SPEECH (TTS):
 
-1. Google Text to Speech (gtts)
-2. pyttsx3
-3. FakeYou (https://fakeyou.com)
-'''
 # 1. gtts (OK)
 def getVoice_gtts(responseChatGPT):
     tts = gTTS(text=responseChatGPT, lang='pt')
@@ -58,9 +63,9 @@ def get_tts_token(model_name):  # OK!
 
     for i in range(len(json_data)):
         data = json_data[i]
-        if (data['ietf_primary_language_subtag'] == 'pt'):
-            if (model_name.lower() == data['title'] or model_name.lower() == data['maybe_suggested_unique_bot_command']):
-                return data['model_token']
+        # if (data['ietf_primary_language_subtag'] == 'pt'):
+        if (model_name.lower() == data['title'] or model_name.lower() == data['maybe_suggested_unique_bot_command']):
+            return data['model_token']
     return ''
 
 
@@ -113,13 +118,30 @@ def getVoice_fakeyou(responseChatGPT, tts_model_token):  # It doesn't work
     try:
         fy.say(text="It's a me, Mario!", ttsModelToken=tts_model_token)
         # fy.say(text=responseChatGPT,ttsModelToken=tts_model_token)
-        try:
-            filename =  format_model_name(tts_model_token)
-            path = 'voiceFiles/fakeyou/'+ filename + '.mp3'
-            fakeyou.objects.wav.save('', path=path) # problem
-            print("Voz salva\n")
-        except Exception as e:
-            print(e)
+
+        # get required data
+        inference_job_token = fy.make_tts_job(responseChatGPT, tts_model_token)
+        url_wav_data = "https://api.fakeyou.com/tts/job/" + inference_job_token
+
+        # request data from url
+        request_wav_data = requests.get(url_wav_data)
+
+        # generate a json file
+        json_file = request_wav_data.json()
+        print(json_file)
+
+        while (json_file['state']['status'] != 'complete_success'):
+            print(json_file['state']['status'])
+            if (json_file['state']['status'] == 'complete_success'):
+                # tentativa 1
+                print(json_file['state']['status'])
+                objects.wav(json_file)
+
+                # path = getFilePathFakeyou()
+                objects.wav.save(os.getcwd())  # problem
+            else:
+                request_wav_data = requests.get(url_wav_data)
+                json_file = request_wav_data.json()
     except fakeyou.exception.TooManyRequests:
         print("Cool down")
     return
