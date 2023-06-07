@@ -87,6 +87,8 @@ def format_model_name(tts_model_token):
     if "(" in model_name and ")" in model_name:
         model_name.replace("(", ' ')
         model_name.replace(")", ' ')
+        model_name.replace(",", ' ')
+        model_name.replace("-", ' ')
 
     if ' ' in model_name:
         lComp = model_name.split(' ')
