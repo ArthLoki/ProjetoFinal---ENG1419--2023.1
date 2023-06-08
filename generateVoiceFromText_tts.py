@@ -156,7 +156,7 @@ def downloadVoiceFromFakeyou(responseChatGPT, tts_model_token):
     return
 
 
-def getVoice_fakeyou(responseChatGPT, tts_model_token):  # It doesn't work
+def getVoice_fakeyou(responseChatGPT, tts_model_token):  # Ok!
     try:
         fy.say(text=responseChatGPT,ttsModelToken=tts_model_token)
         downloadVoiceFromFakeyou(responseChatGPT, tts_model_token)

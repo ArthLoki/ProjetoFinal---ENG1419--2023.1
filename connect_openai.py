@@ -17,6 +17,3 @@ def call_gpt(prompt):
     print(completions.choices[0].message.content)
 
     return completions.choices[0].message.content
-
-
-# call_gpt("Diga Hello World.")
