@@ -25,6 +25,6 @@ def playAudio(audio_path):
     sound = pygame.mixer.Sound("desert_rustle.wav")
     pygame.mixer.Sound.play(sound)
 
-    # deletes the audio file after it's played
+    # deletes the audio file
     # os.remove(audio_path)
     return
