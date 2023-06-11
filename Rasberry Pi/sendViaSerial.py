@@ -16,14 +16,14 @@ def sendCommandViaSerial(character):
     global mySerial, dictCharacterServoInfo
 
     if (mySerial != None):
-        commandCharacter = "personalidade " + character
+        commandCharacter = "personalidade " + character + "\n"
         mySerial.write(commandCharacter.encode("UTF-8"))
 
         commandMouthValue = dictCharacterServoInfo[character]['boca']
         if (commandMouthValue < 10):
-            commandMouth = "boca 00" + commandMouthValue
+            commandMouth = "boca 00" + commandMouthValue + "\n"
         elif (commandMouthValue < 100):
-            commandMouth = "boca 0" + commandMouthValue
+            commandMouth = "boca 0" + commandMouthValue + "\n"
         mySerial.write(commandMouth.encode("UTF-8"))
     return
 
@@ -32,3 +32,5 @@ def mainSerial(character):
     thread.daemon = True
     thread.start()
     return
+
+mainSerial('Robo')
