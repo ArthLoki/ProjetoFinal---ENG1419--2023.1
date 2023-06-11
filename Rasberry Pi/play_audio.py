@@ -26,7 +26,7 @@ def incCounter(audioPlayed):
     sleep(audio_duration)
     audioPlayed = True
     if (audioPlayed == True):
-        text2sendViaSerial = "fim"
+        text2sendViaSerial = "fim\n"
         print(text2sendViaSerial)
         mySerial.write(text2sendViaSerial.encode("UTF-8"))
         mx.music.pause()
@@ -47,7 +47,7 @@ def playAudio(audio_path):
             mx.music.set_volume(0.2)
 
             if (audioPlayed == False):
-                text2sendViaSerial = "falando"
+                text2sendViaSerial = "falando\n"
                 print(text2sendViaSerial)
                 mySerial.write(text2sendViaSerial.encode("UTF-8"))
 
