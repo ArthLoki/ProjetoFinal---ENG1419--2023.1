@@ -13,6 +13,7 @@ import fakeyou
 from dotenv import load_dotenv
 import os
 import requests, json
+from play_audio import playAudio
 
 load_dotenv()
 
@@ -26,7 +27,7 @@ fy.login(username, password)
 # 1. gtts (OK)
 def getVoice_gtts(responseChatGPT):
     tts = gTTS(text=responseChatGPT, lang='pt')
-    tts.save("voiceFiles/robot.mp3")
+    tts.save("voiceFiles/answers/answer.mp3")
     return
 
 # 2. pyttsx3 (OK)
@@ -44,7 +45,7 @@ def getVoice_pyttsx3(responseChatGPT):
     engine.setProperty('voice', voices[2].id)
 
     ## Save into a file
-    engine.save_to_file(responseChatGPT, 'voiceFiles/person.mp3')
+    engine.save_to_file(responseChatGPT, 'voiceFiles/answers/answer.mp3')
 
     ## DO NOT DELETE
     engine.runAndWait()
@@ -82,25 +83,25 @@ def get_model_name(tts_model_token):
     return ''
 
 
-def format_model_name(tts_model_token):
-    model_name = get_model_name(tts_model_token)
-    if "(" in model_name and ")" in model_name:
-        model_name.replace("(", ' ')
-        model_name.replace(")", ' ')
-        model_name.replace(",", ' ')
-        model_name.replace("-", ' ')
+# def format_model_name(tts_model_token):
+#     model_name = get_model_name(tts_model_token)
+#     if "(" in model_name and ")" in model_name:
+#         model_name.replace("(", ' ')
+#         model_name.replace(")", ' ')
+#         model_name.replace(",", ' ')
+#         model_name.replace("-", ' ')
 
-    if ' ' in model_name:
-        lComp = model_name.split(' ')
+#     if ' ' in model_name:
+#         lComp = model_name.split(' ')
 
-    new_model_name = 'fakeyou_'
-    for i in range(len(lComp)):
-        if (i < len(lComp) - 1):
-            new_model_name += (lComp[i] + '_')
-        else:
-            new_model_name += lComp[i]
+#     new_model_name = 'fakeyou_'
+#     for i in range(len(lComp)):
+#         if (i < len(lComp) - 1):
+#             new_model_name += (lComp[i] + '_')
+#         else:
+#             new_model_name += lComp[i]
 
-    return new_model_name
+#     return new_model_name
 
 
 def getFilePathFakeyou():  # OK!
@@ -138,12 +139,12 @@ def downloadVoiceFromFakeyou(responseChatGPT, tts_model_token):
 
         try:
             # get filename
-            filename = format_model_name(tts_model_token)
+            # filename = format_model_name(tts_model_token)
 
             # download wav file
             wav_file = requests.get(wav_url)
             print(wav_file)
-            path = getFilePathFakeyou() + filename + '.wav'
+            path = getFilePathFakeyou() + 'answer.wav'
             with open(path, 'wb') as f:
                 f.write(wav_file.content)
 
@@ -173,8 +174,12 @@ def text2voice(prompt, character):
     # convert text to voice
     if (character == 'Robo'):
         getVoice_gtts(responseChatGPT)
+        audio_path = 'voiceFiles/answers/answer.mp3'
+        playAudio(audio_path)
     elif (character == 'Mulher 1'):
         getVoice_pyttsx3(responseChatGPT)
+        audio_path = 'voiceFiles/answers/answer.mp3'
+        playAudio(audio_path)
     else:
         # get tts_model_token
         tts_model_token = get_tts_token(character)
@@ -182,6 +187,8 @@ def text2voice(prompt, character):
         # compare to empty string
         if (tts_model_token != ''):
             getVoice_fakeyou(responseChatGPT, tts_model_token)
+            audio_path = 'voiceFiles/answers/answer.wav'
+            playAudio(audio_path)
         else:
             print("Modelo de voz não encontrado")
     return

@@ -15,7 +15,8 @@ int maxMouthAngle2 = 90;
 
 // energy
 int mouthEnergy = 0;
-int minMouthEnergy = 15;
+// int minMouthEnergy = 15;
+int characterEnergy = 0;
 
 // FUNCTIONS
 
@@ -39,18 +40,23 @@ void getCommandFromSerial(){
   if (Serial.available() > 0) {
     String comando = Serial.readStringUntil('\n');
     comando.trim();
+
+    if (comando.startsWith("personalidade ")) {
+      characterEnergy = (comando.substring(14,17)).toInt();
+    }
+
     if (comando.startsWith("boca ")) {
       mouthEnergy = (comando.substring(5,8)).toInt();
-      
-      minMouthAngle1 = map(mouthEnergy, minMouthEnergy, 100, 5, 60);
-      maxMouthAngle2 = 90 + minMouthAngle1;
+
+      minMouthAngle1 = map(mouthEnergy, 0, 100, 90, 30);
+      maxMouthAngle2 = map(mouthEnergy, 0, 100, 90, 150);
     }
 
     if (comando == "falando"){
       changeMouthMovementAngle();
     }
 
-    if (comando == "silencio")){
+    if (comando == "fim"){
       mouth1.write(90);
       mouth2.write(90);
     }

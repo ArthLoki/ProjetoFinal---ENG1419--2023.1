@@ -44,7 +44,7 @@ def whisper():
             result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
             return result.stdout
 
-        texto = out("whisper audio.wav --model medium")
+        texto = out("whisper voiceFiles/questions/question.wav --model medium")
         num_timeStamps = texto.count(']')
         texto_final = ""
         for i in range(num_timeStamps):
@@ -76,7 +76,7 @@ def imprimir_mensagem1():
         texto1.delete("1.0", END)
         texto1.config(state='disable')
         global aplicativo
-        comando = ["ffmpeg", "-y", "-f", "dshow", "-i", "audio=Microphone (Synaptics SmartAudio HD)", "-t", "00:30", "audio.wav"]
+        comando = ["ffmpeg", "-y", "-f", "dshow", "-i", "audio=Microphone (Synaptics SmartAudio HD)", "-t", "00:30", "voiceFiles/questions/question.wav"]
         aplicativo = Popen(comando)
         print("Iniciando gravação de áudio...\n\n")
     else:

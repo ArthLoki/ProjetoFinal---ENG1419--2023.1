@@ -1,51 +1,68 @@
 # from pygame import mixer
 from serial import Serial
-import pygame
-import os
+from pygame import time as pytime, mixer as mx
+from time import sleep
+import librosa
+# import os
 
-global mySerial, audioPlaying
+global mySerial, audio_duration
 
 mySerial = Serial("COM9", baudrate=9600, timeout=0.1)
 # mySerial = None
 
-audioPlaying = 0  # 0 para False e 1 para True
+audio_duration = 0
 
-def observeFolderChanges():
-    return
+# def observeFolderChanges():
+#     return
 
-def getNewerVoiceFile():
-    return
+# def getNewerVoiceFile():
+#     return
+
+def getAudioDuration(audio_path):
+    return librosa.get_duration(path=audio_path)
+
+def incCounter(audioPlayed):
+    global mySerial, audio_duration
+    sleep(audio_duration)
+    audioPlayed = True
+    if (audioPlayed == True):
+        text2sendViaSerial = "fim"
+        print(text2sendViaSerial)
+        mySerial.write(text2sendViaSerial.encode("UTF-8"))
+        mx.music.pause()
+        mx.music.stop()
+        mx.quit()
 
 def playAudio(audio_path):
-    global mySerial, audioPlaying
-
-    # # init mixer
-    # mixer.init()
-
-    # # load audio
-    # mixer.music.load(audio_path)
-
-    # # set volume
-    # mixer.music.set_volume(0.7)
-
-    # # play audio
-    # mixer.music.play()
+    global mySerial, audio_duration
 
     try:
-        pygame.init()
-        sound = pygame.mixer.Sound("desert_rustle.wav")
-        pygame.mixer.Sound.play(sound)
+        mx.init()
+        audioPlayed = False
 
-        audioPlaying = 1
-        text2sendViaSerial = "falando"
+        mixer = mx.get_init()
+        print("music started playing....")
+        while (mixer != None):
+            mx.music.load(audio_path)
+            mx.music.set_volume(0.2)
+
+            if (audioPlayed == False):
+                text2sendViaSerial = "falando"
+                print(text2sendViaSerial)
+                mySerial.write(text2sendViaSerial.encode("UTF-8"))
+
+                audio_duration = getAudioDuration(audio_path)
+                mx.music.play()
+                incCounter(audioPlayed)
+            else:
+                break
+            mixer = mx.get_init()
     except Exception as e:
-        audioPlaying = 0
-        text2sendViaSerial = "silencio"
         print(e)
-
-    mySerial.write(text2sendViaSerial.encode("UTF-8"))
 
 
     # deletes the audio file
     # os.remove(audio_path)
     return
+
+# playAudio('voiceFiles/answers/answer.mp3')
