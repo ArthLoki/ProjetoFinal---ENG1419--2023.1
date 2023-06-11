@@ -23,6 +23,9 @@ password = os.getenv("PASSWORD_FAKEYOU")
 fy = fakeyou.FakeYou(verbose=True)
 fy.login(username, password)
 
+global responseChatGPT
+responseChatGPT = ''
+
 
 # 1. gtts (OK)
 def getVoice_gtts(responseChatGPT):
@@ -169,6 +172,8 @@ def getVoice_fakeyou(responseChatGPT, tts_model_token):  # Ok!
 def text2voice(prompt, character):
 
     # get text response from chatGPT
+    global responseChatGPT
+
     responseChatGPT = call_gpt(prompt)
 
     # convert text to voice
@@ -192,3 +197,8 @@ def text2voice(prompt, character):
         else:
             print("Modelo de voz não encontrado")
     return
+
+# Get response to show in tkinter
+def getResponseChatGPT():
+    global responseChatGPT
+    return responseChatGPT
