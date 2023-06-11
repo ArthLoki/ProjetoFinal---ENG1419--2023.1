@@ -12,6 +12,7 @@ int mouthAngle2 = 90;
 // min and max angle related to the energy given
 int minMouthAngle1 = 90;
 int maxMouthAngle2 = 90;
+int mouthMaxOpening = 60;
 
 // energy
 int mouthEnergy = 0;
@@ -48,8 +49,8 @@ void getCommandFromSerial(){
     if (comando.startsWith("boca ")) {
       mouthEnergy = (comando.substring(5,8)).toInt();
 
-      minMouthAngle1 = map(mouthEnergy, 0, 100, 90, 30);
-      maxMouthAngle2 = map(mouthEnergy, 0, 100, 90, 150);
+      minMouthAngle1 = map(mouthEnergy, 0, 100, 90, 90 - mouthMaxOpening);
+      maxMouthAngle2 = map(mouthEnergy, 0, 100, 90, 90 + mouthMaxOpening);
     }
 
     if (comando == "falando"){
