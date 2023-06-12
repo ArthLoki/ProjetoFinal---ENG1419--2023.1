@@ -46,14 +46,19 @@ void getCommandFromSerial(){
       characterEnergy = (comando.substring(14,17)).toInt();
     }
 
-    if (comando.startsWith("boca ")) {
-      mouthEnergy = (comando.substring(5,8)).toInt();
+    // if (comando.startsWith("boca ")) {
+    //   mouthEnergy = (comando.substring(5,8)).toInt();
+
+    //   minMouthAngle1 = map(mouthEnergy, 0, 100, 90, 90 - mouthMaxOpening);
+    //   maxMouthAngle2 = map(mouthEnergy, 0, 100, 90, 90 + mouthMaxOpening);
+    // }
+
+    if (comando == "falando "){
+      mouthEnergy = (comando.substring(8,)).toInt();
 
       minMouthAngle1 = map(mouthEnergy, 0, 100, 90, 90 - mouthMaxOpening);
       maxMouthAngle2 = map(mouthEnergy, 0, 100, 90, 90 + mouthMaxOpening);
-    }
 
-    if (comando == "falando"){
       changeMouthMovementAngle();
     }
 
