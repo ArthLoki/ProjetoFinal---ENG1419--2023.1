@@ -3,7 +3,7 @@ from tkinter import scrolledtext
 from subprocess import Popen, PIPE, run
 import os
 from threading import Thread
-from generateVoiceFromText_tts import text2voice
+from generateVoiceFromText_tts import text2voice, getResponseChatGPT
 
 global aplicativo
 aplicativo = None
@@ -14,9 +14,10 @@ janela.title("Ice Cream IV")
 canvas = Canvas(janela, width=450, height=520)
 canvas.pack()
 
-global botau1,textobotao1,texto1, tipo, dictTipos, texto_final
+global botau1,textobotao1,texto1, tipo, dictTipos, texto_final, respostaChatGPT
 botau1 = False
 tipo = ''
+respostaChatGPT = ''
 
 dictTipos = {'Xuxa': 'xuxa', 'Robo': 'Robo', "Mulher 1": "Mulher 1", "William Bonner": "William Bonner"}
 
@@ -60,7 +61,8 @@ def whisper():
     texto1.config(state='normal')    
     texto1.insert(END, texto_final)
     texto1.config(state='disable')
-    openai_thread = Thread(target = text2voice, args = [texto_final, dictTipos[tipo.get()]])
+    respostaChatGPT = getResponseChatGPT(texto_final)
+    openai_thread = Thread(target = text2voice, args = [respostaChatGPT, dictTipos[tipo.get()]])
     openai_thread.start()
 
 
