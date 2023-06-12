@@ -9,33 +9,31 @@ def calculate_audio_energy(audio_data):
     return energy
 
 # Função de callback para processar o áudio em tempo real
-def audio_callback(indata, frames, tempo, status):
-    global start_time,data,sample_rate,last_time
-
-    current_time = time.time() - start_time
-
-    if current_time > last_time + 0.1 and len(data) >= int((current_time + 0.05) * sample_rate):
-        print("Tempo decorrido:", current_time)
-        starter_time = current_time - 0.05  # Tempo de início em segundos
-        end_time = current_time + 0.05  # Tempo de fim em segundos
-
+def audio_callback(data,sample_rate,lista):
+    tempo = 0.05
+    tempo_max = librosa.get_duration(y=data, sr=sample_rate)
+    while(tempo < tempo_max):
+        starter_time = tempo - 0.05  # Tempo de início em segundos
+        end_time = tempo + 0.05  # Tempo de fim em segundos
         # Converte o intervalo de tempo para amostras
         start_sample = int(starter_time * sample_rate)
         end_sample = int(end_time * sample_rate)
-        
-        print("{}".format(calculate_audio_energy(data[start_sample:end_sample])))
-        last_time = current_time
-    #energy = calculate_audio_energy(data[start_time:end_time])
-    #print("Energia do áudio:", energy)
+        lista.append(calculate_audio_energy(data[start_sample:end_sample]))
+        tempo += 0.1
 
 # Carrega o arquivo de áudio
-data, sample_rate = librosa.load(r"C:\Users\micro1\Downloads\audio.wav")
-
+def createEnergyList(nome_audio):
+    energiListy = []
+    data, sample_rate = librosa.load(nome_audio)
+    #r"C:\Users\micro1\Downloads\audio.wav"
+    audio_callback(data,sample_rate,energiListy)
+    return energiListy
 
 #print(data[start_sample:end_sample])
 # Inicia a reprodução do áudio
-last_time = 0
-start_time = time.time()
-with sd.OutputStream(callback=audio_callback, samplerate=sample_rate):
-    sd.play(data, sample_rate)
-    sd.wait()
+# last_time = 0
+# start_time = time.time()
+# with sd.OutputStream(callback=audio_callback, samplerate=sample_rate):
+#     sd.play(data, sample_rate)
+#     sd.wait()
+
