@@ -23,7 +23,7 @@ import os
 
 # Serial + playAudio
 from serial import Serial
-from play_audio import playAudio
+# from play_audio import playAudio
 from sendViaSerial import sendCommandViaSerial
 
 # Global variables
@@ -160,15 +160,7 @@ def getVoice_fakeyou(responseChatGPT, tts_model_token):
     return
 
 # Conversion according to the question/prompt and chosen character
-def text2voice(prompt, character):
-
-    # get text response from chatGPT
-    global responseChatGPT
-    # responseChatGPT = call_gpt(prompt)
-
-    # Testing
-    responseChatGPT = "Olá mundo!"
-
+def text2voice(responseChatGPT, character):
 
     # Serial variable
     mySerial = Serial("COM8", baudrate=9600, timeout=0.1)
@@ -178,13 +170,13 @@ def text2voice(prompt, character):
     if (character == 'Robo'):
         getVoice_gtts(responseChatGPT)
         audio_path = 'voiceFiles/answers/answer.mp3'
-        sendCommandViaSerial(mySerial, character)
-        playAudio(mySerial, audio_path)
+        sendCommandViaSerial(mySerial, character, audio_path)
+        # playAudio(mySerial, audio_path)
     elif (character == 'Mulher 1'):
         getVoice_pyttsx3(responseChatGPT)
         audio_path = 'voiceFiles/answers/answer.mp3'
-        sendCommandViaSerial(mySerial, character)
-        playAudio(mySerial, audio_path)
+        sendCommandViaSerial(mySerial, character, audio_path)
+        # playAudio(mySerial, audio_path)
     else:
         # get tts_model_token
         tts_model_token = get_tts_token(character)
@@ -193,15 +185,15 @@ def text2voice(prompt, character):
         if (tts_model_token != ''):
             getVoice_fakeyou(responseChatGPT, tts_model_token)
             audio_path = 'voiceFiles/answers/answer.wav'
-            sendCommandViaSerial(mySerial, character)
-            playAudio(mySerial, audio_path)
+            sendCommandViaSerial(mySerial, character, audio_path)
+            # playAudio(mySerial, audio_path)
         else:
             print("Modelo de voz não encontrado")
     return
 
 # Get response to show in tkinter
-def getResponseChatGPT():
-    global responseChatGPT
+def getResponseChatGPT(prompt):
+    responseChatGPT = call_gpt(prompt)
     return responseChatGPT
 
 # Testing
