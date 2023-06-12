@@ -6,17 +6,28 @@ OPÇÕES DE TEXT TO SPEECH (TTS):
 3. FakeYou (https://fakeyou.com)
 '''
 
+# Openai
 from connect_openai import call_gpt
+
+# TTS
 from gtts import gTTS
 import pyttsx3
 import fakeyou
+
+# Download speech
+import requests
+
+# Get Enviroment Variables
 from dotenv import load_dotenv
 import os
-import requests, json
+
+# Serial + playAudio
+from serial import Serial
 from play_audio import playAudio
+from sendViaSerial import sendCommandViaSerial
 
+# Global variables
 load_dotenv()
-
 username = os.getenv("USER_FAKEYOU")
 password = os.getenv("PASSWORD_FAKEYOU")
 
@@ -26,14 +37,14 @@ fy.login(username, password)
 global responseChatGPT
 responseChatGPT = ''
 
-
-# 1. gtts (OK)
+# Functions
+# 1. gtts
 def getVoice_gtts(responseChatGPT):
     tts = gTTS(text=responseChatGPT, lang='pt')
     tts.save("voiceFiles/answers/answer.mp3")
     return
 
-# 2. pyttsx3 (OK)
+# 2. pyttsx3
 def getVoice_pyttsx3(responseChatGPT):
     engine = pyttsx3.init()
 
@@ -54,8 +65,8 @@ def getVoice_pyttsx3(responseChatGPT):
     engine.runAndWait()
     return
 
-# 3. Fakeyou (NOT OK)
-def get_tts_token(model_name):  # OK!
+# 3. Fakeyou
+def get_tts_token(model_name):
     voices = fy.list_voices()
 
     json_data = []
@@ -86,37 +97,15 @@ def get_model_name(tts_model_token):
     return ''
 
 
-# def format_model_name(tts_model_token):
-#     model_name = get_model_name(tts_model_token)
-#     if "(" in model_name and ")" in model_name:
-#         model_name.replace("(", ' ')
-#         model_name.replace(")", ' ')
-#         model_name.replace(",", ' ')
-#         model_name.replace("-", ' ')
-
-#     if ' ' in model_name:
-#         lComp = model_name.split(' ')
-
-#     new_model_name = 'fakeyou_'
-#     for i in range(len(lComp)):
-#         if (i < len(lComp) - 1):
-#             new_model_name += (lComp[i] + '_')
-#         else:
-#             new_model_name += lComp[i]
-
-#     return new_model_name
-
-
-def getFilePathFakeyou():  # OK!
+def getFilePathFakeyou():
     # current path
     current_path = (os.getcwd()).replace('\\', '/')
 
     # base path
-    complement = '/voiceFiles/'
+    complement = '/voiceFiles/answers/'
 
     # filePath
     return current_path + complement
-
 
 def downloadVoiceFromFakeyou(responseChatGPT, tts_model_token):
     try:
@@ -159,8 +148,7 @@ def downloadVoiceFromFakeyou(responseChatGPT, tts_model_token):
         print(e1)
     return
 
-
-def getVoice_fakeyou(responseChatGPT, tts_model_token):  # Ok!
+def getVoice_fakeyou(responseChatGPT, tts_model_token):
     try:
         fy.say(text=responseChatGPT,ttsModelToken=tts_model_token)
         downloadVoiceFromFakeyou(responseChatGPT, tts_model_token)
@@ -173,18 +161,27 @@ def text2voice(prompt, character):
 
     # get text response from chatGPT
     global responseChatGPT
-
     responseChatGPT = call_gpt(prompt)
+
+    # Testing
+    # responseChatGPT = "Olá mundo!"
+
+
+    # Serial variable
+    mySerial = Serial("COM8", baudrate=9600, timeout=0.1)
+    # mySerial = None
 
     # convert text to voice
     if (character == 'Robo'):
         getVoice_gtts(responseChatGPT)
         audio_path = 'voiceFiles/answers/answer.mp3'
-        playAudio(audio_path)
+        sendCommandViaSerial(mySerial, character)
+        playAudio(mySerial, audio_path)
     elif (character == 'Mulher 1'):
         getVoice_pyttsx3(responseChatGPT)
         audio_path = 'voiceFiles/answers/answer.mp3'
-        playAudio(audio_path)
+        sendCommandViaSerial(mySerial, character)
+        playAudio(mySerial, audio_path)
     else:
         # get tts_model_token
         tts_model_token = get_tts_token(character)
@@ -193,7 +190,8 @@ def text2voice(prompt, character):
         if (tts_model_token != ''):
             getVoice_fakeyou(responseChatGPT, tts_model_token)
             audio_path = 'voiceFiles/answers/answer.wav'
-            playAudio(audio_path)
+            sendCommandViaSerial(mySerial, character)
+            playAudio(mySerial, audio_path)
         else:
             print("Modelo de voz não encontrado")
     return
@@ -202,3 +200,6 @@ def text2voice(prompt, character):
 def getResponseChatGPT():
     global responseChatGPT
     return responseChatGPT
+
+# Testing
+# text2voice("", "Robo")

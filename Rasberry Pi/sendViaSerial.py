@@ -1,36 +1,35 @@
-from serial import Serial
-from threading import Thread
+# from serial import Serial
 from time import sleep
 
 
-global mySerial, dictCharacterServoInfo, energyList
+global energyList, dictCharacterServoInfo
 
-mySerial = Serial("COM9", baudrate=9600, timeout=0.1)
-# mySerial = None
+dictCharacterServoInfo = {'Xuxa': {'boca': 100, "sobrancelha": 60}, 
+                        'Robo': {'boca': 20, "sobrancelha": 5}, 
+                        "Mulher 1": {'boca': 50, "sobrancelha": 20}, 
+                        "William Bonner": {'boca': 80, "sobrancelha": 30}}
 
-print("[INFO] Serial: OK")
-
-dictCharacterServoInfo = {'Xuxa': {'boca': 100}, 'Robo': {'boca': 20}, "Mulher 1": {'boca': 50}, "William Bonner": {'boca': 80}}
-
-def sendCommandViaSerial(character):
-    global mySerial, dictCharacterServoInfo
+def sendCommandViaSerial(mySerial, character):
+    global dictCharacterServoInfo
 
     if (mySerial != None):
-        commandCharacter = "personalidade " + character + "\n"
-        mySerial.write(commandCharacter.encode("UTF-8"))
+        print("[INFO] Serial: OK")
 
+        # Character
+        commandEyebrowValue = dictCharacterServoInfo[character]['sobrancelha']
+        commandEyebrowValueLenDiff = 3 - len(str(commandEyebrowValue))
+        commandCharacter = "personalidade " + (commandEyebrowValueLenDiff * "0") + str(commandEyebrowValue) + "\n"
+        print("[INFO] Serial: personalidade " + (commandEyebrowValueLenDiff * "0") + str(commandEyebrowValue))
+
+        # Mouth
         commandMouthValue = dictCharacterServoInfo[character]['boca']
-        if (commandMouthValue < 10):
-            commandMouth = "boca 00" + commandMouthValue + "\n"
-        elif (commandMouthValue < 100):
-            commandMouth = "boca 0" + commandMouthValue + "\n"
-        mySerial.write(commandMouth.encode("UTF-8"))
-    return
+        commandMouthValueLenDiff = 3 - len(str(commandMouthValue))
+        commandMouth = "boca " + (commandMouthValueLenDiff * "0") + str(commandMouthValue) + "\n"
+        print("[INFO] Serial: boca " + (commandMouthValueLenDiff * "0") + str(commandMouthValue))
 
-def mainSerial(character):
-    thread = Thread(target = sendCommandViaSerial, args = [character])
-    thread.daemon = True
-    thread.start()
+        try:
+            mySerial.write(commandCharacter.encode("UTF-8"))
+            mySerial.write(commandMouth.encode("UTF-8"))
+        except Exception as e:
+            print(e)
     return
-
-mainSerial('Robo')
