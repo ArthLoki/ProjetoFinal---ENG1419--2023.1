@@ -31,14 +31,8 @@ load_dotenv()
 username = os.getenv("USER_FAKEYOU")
 password = os.getenv("PASSWORD_FAKEYOU")
 
-# username = "LadyLoki234"
-# password = "Lunanda322434"
-
 fy = fakeyou.FakeYou(verbose=True)
 fy.login(username, password)
-
-global responseChatGPT
-responseChatGPT = ''
 
 # Functions
 # 1. gtts
