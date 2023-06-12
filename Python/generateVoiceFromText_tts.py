@@ -7,7 +7,7 @@ OPÇÕES DE TEXT TO SPEECH (TTS):
 '''
 
 # Openai
-from connect_openai import call_gpt
+# from connect_openai import call_gpt
 
 # TTS
 from gtts import gTTS
@@ -28,8 +28,11 @@ from sendViaSerial import sendCommandViaSerial
 
 # Global variables
 load_dotenv()
-username = os.getenv("USER_FAKEYOU")
-password = os.getenv("PASSWORD_FAKEYOU")
+# username = os.getenv("USER_FAKEYOU")
+# password = os.getenv("PASSWORD_FAKEYOU")
+
+username = "LadyLoki234"
+password = "Lunanda322434"
 
 fy = fakeyou.FakeYou(verbose=True)
 fy.login(username, password)
@@ -161,10 +164,10 @@ def text2voice(prompt, character):
 
     # get text response from chatGPT
     global responseChatGPT
-    responseChatGPT = call_gpt(prompt)
+    # responseChatGPT = call_gpt(prompt)
 
     # Testing
-    # responseChatGPT = "Olá mundo!"
+    responseChatGPT = "Olá mundo!"
 
 
     # Serial variable

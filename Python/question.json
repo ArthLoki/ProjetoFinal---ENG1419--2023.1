@@ -1,0 +1,1 @@
+{"text": " Diga ol\u00e1 mundo!", "segments": [{"id": 0, "seek": 0, "start": 0.0, "end": 3.0, "text": " Diga ol\u00e1 mundo!", "tokens": [50364, 413, 9900, 2545, 842, 7968, 0, 50514], "temperature": 0.0, "avg_logprob": -0.6962442398071289, "compression_ratio": 0.6666666666666666, "no_speech_prob": 0.679339587688446}], "language": "pt"}

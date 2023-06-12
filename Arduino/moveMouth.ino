@@ -12,7 +12,7 @@ int mouthAngle2 = 90;
 // min and max angle related to the energy given
 int minMouthAngle1 = 90;
 int maxMouthAngle2 = 90;
-int mouthMaxOpening = 60;
+int mouthMaxOpening = 45;
 
 // energy
 int mouthEnergy = 0;
