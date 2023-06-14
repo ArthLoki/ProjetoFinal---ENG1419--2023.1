@@ -30,7 +30,7 @@ def playAudio(mySerial, mx, audio_path):
     mx.music.play()
 
     i = 0
-    while (mixer != None and i < len(energyList)):
+    while (mixer != None):
         audioPlaying = mx.music.get_busy()
         if (audioPlaying == True): 
             if (mx.music.get_pos() > audio_pos + 50):
