@@ -24,7 +24,7 @@ import os
 # Serial + playAudio
 from serial import Serial
 # from play_audio import playAudio
-from sendViaSerial_andPlayAudio import playAudio
+from sendViaSerial_andPlayAudio import mainPlayAudio
 
 # Global variables
 load_dotenv()
@@ -157,18 +157,18 @@ def getVoice_fakeyou(responseChatGPT, tts_model_token):
 def text2voice(responseChatGPT, character):
 
     # Serial variable
-    mySerial = Serial("COM8", baudrate=9600, timeout=0.1)
+    mySerial = Serial("COM5", baudrate=9600, timeout=0.1)
     # mySerial = None
 
     # convert text to voice
     if (character == 'Robo'):
         getVoice_gtts(responseChatGPT)
         audio_path = 'voiceFiles/answers/answer.mp3'
-        playAudio(mySerial, character, audio_path)
+        mainPlayAudio(mySerial, audio_path)
     elif (character == 'Mulher 1'):
         getVoice_pyttsx3(responseChatGPT)
         audio_path = 'voiceFiles/answers/answer.mp3'
-        playAudio(mySerial, audio_path)
+        mainPlayAudio(mySerial, audio_path)
     else:
         # get tts_model_token
         tts_model_token = get_tts_token(character)
@@ -177,7 +177,7 @@ def text2voice(responseChatGPT, character):
         if (tts_model_token != ''):
             getVoice_fakeyou(responseChatGPT, tts_model_token)
             audio_path = 'voiceFiles/answers/answer.wav'
-            playAudio(mySerial, character, audio_path)
+            mainPlayAudio(mySerial, audio_path)
         else:
             print("Modelo de voz não encontrado")
     return

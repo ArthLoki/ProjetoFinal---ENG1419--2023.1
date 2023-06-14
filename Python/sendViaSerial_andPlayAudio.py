@@ -1,19 +1,11 @@
 from serial import Serial
 from pygame import mixer as mx
 from time import sleep
-import librosa
 from threading import Thread
 from calcula_energia_audio import createEnergyList
 
-global audio_duration, audioPlaying
-
-audio_duration = 0
+global audioPlaying
 audioPlaying = False
-
-def getAudioDuration(audio_path):
-    global audio_duration
-    audio_duration = librosa.get_duration(path=audio_path)
-    return
 
 def playAudio(mySerial, mx, audio_path):
     global audioPlaying
@@ -33,18 +25,25 @@ def playAudio(mySerial, mx, audio_path):
     while (mixer != None):
         audioPlaying = mx.music.get_busy()
         if (audioPlaying == True): 
-            if (mx.music.get_pos() > audio_pos + 50):
+            if (mx.music.get_pos() > audio_pos + 100):
                 audio_pos = mx.music.get_pos()
                 if (i < len(energyList)):
                     energy = energyList[i]
-                    
+                    # energy_str = str(energy)
                     # Character 
                     sendCommandViaSerial(mySerial, energy)
 
                     # Audio
                     text2sendViaSerial = "falando " + str(energyList[i]) + "\n"
-                    print("[INFO] Serial: falando " + str(energyList[i]))
+                    # print("[INFO] Serial: falando " + str(energyList[i]))
                     mySerial.write(text2sendViaSerial.encode("UTF-8"))
+
+                    serial_thread = Thread(target=getFromSerial, args = [mySerial])
+                    serial_thread.daemon = True
+                    serial_thread.start()
+
+                    # getFromSerial(mySerial)
+
                 i += 1
         else:
             endAudio(mySerial, mx)
@@ -53,7 +52,7 @@ def playAudio(mySerial, mx, audio_path):
 
 def endAudio(mySerial, mx):
     text2sendViaSerial = "fim\n"
-    print("[INFO] Serial: fim")
+    # print("[INFO] Serial: fim")
     mySerial.write(text2sendViaSerial.encode("UTF-8"))
     # mx.music.pause()
     mx.music.stop()
@@ -62,26 +61,32 @@ def endAudio(mySerial, mx):
 
 def sendCommandViaSerial(mySerial, energy):
     commandCharacter = "personalidade " + str(energy) + "\n"
-    print("[INFO] Serial: personalidade " + str(energy))
+    # print("[INFO] Serial: personalidade " + str(energy))
     mySerial.write(commandCharacter.encode("UTF-8"))
     return
 
+
+def getFromSerial(mySerial):
+    # while True:
+    if mySerial != None:
+        textReceived = mySerial.readline().decode().strip()
+        print("Texto recebido pela Serial: ", textReceived)
+    sleep(0.1)
+
 def mainPlayAudio(mySerial, audio_path):
-    # global audio_duration
-
-    # getAudioDuration(audio_path)
-
     if (mySerial != None):
         mx.init()
         # playAudio(mySerial, mx, audio_path)
         audio_thread = Thread(target = playAudio, args = [mySerial, mx, audio_path])
         audio_thread.start()
         audio_thread.join()
+
     return
 
-def testing():
-    mySerial = Serial("COM8", baudrate=9600, timeout=0.1)
-    mainPlayAudio(mySerial, "voiceFiles/answers/answer.mp3")
-    return
+# def testing():
+#     mySerial = Serial("COM5", baudrate=9600, timeout=0.1)
+#     audio_path = "voiceFiles/answers/answer.mp3"
+#     mainPlayAudio(mySerial, audio_path)
+#     return
 
-testing()
+# testing()

@@ -25,11 +25,11 @@ int characterEnergy = 0;
 void setup(){
     Serial.begin(9600);
 
-    mouth1.attach(4, 1000, 2000);
-    mouth2.attach(5, 1000, 2000);
+    mouth1.attach(9);
+    mouth2.attach(10);
 
-    mouth1.write(90)
-    mouth2.write(90)
+    mouth1.write(90);
+    mouth2.write(90);
 }
 
 void loop(){
@@ -42,6 +42,8 @@ void getCommandFromSerial(){
     String comando = Serial.readStringUntil('\n');
     comando.trim();
 
+    Serial.println(comando);
+
     if (comando.startsWith("personalidade ")) {
       characterEnergy = (comando.substring(14,17)).toInt();
     }
@@ -53,8 +55,8 @@ void getCommandFromSerial(){
     //   maxMouthAngle2 = map(mouthEnergy, 0, 100, 90, 90 + mouthMaxOpening);
     // }
 
-    if (comando == "falando "){
-      mouthEnergy = (comando.substring(8,)).toInt();
+    if (comando.startsWith("falando ")){
+      mouthEnergy = (comando.substring(8,11)).toInt();
 
       minMouthAngle1 = map(mouthEnergy, 0, 100, 90, 90 - mouthMaxOpening);
       maxMouthAngle2 = map(mouthEnergy, 0, 100, 90, 90 + mouthMaxOpening);

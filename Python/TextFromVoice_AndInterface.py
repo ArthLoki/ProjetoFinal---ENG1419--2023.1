@@ -62,6 +62,10 @@ def whisper():
     texto1.insert(END, texto_final)
     texto1.config(state='disable')
     respostaChatGPT = getResponseChatGPT(texto_final)
+    texto2.config(state='normal')    
+    texto2.insert(END, respostaChatGPT)
+    texto2.config(state='disable')
+
     openai_thread = Thread(target = text2voice, args = [respostaChatGPT, dictTipos[tipo.get()]])
     openai_thread.start()
 
@@ -77,6 +81,9 @@ def imprimir_mensagem1():
         texto1.config(state='normal')
         texto1.delete("1.0", END)
         texto1.config(state='disable')
+        texto2.config(state='normal')
+        texto2.delete("1.0", END)
+        texto2.config(state='disable')
         global aplicativo
         comando = ["ffmpeg", "-y", "-f", "dshow", "-i", "audio=Microphone (Synaptics SmartAudio HD)", "-t", "00:30", "voiceFiles/questions/question.wav"]
         aplicativo = Popen(comando)
