@@ -25,7 +25,7 @@ def playAudio(mySerial, mx, audio_path):
     while (mixer != None):
         audioPlaying = mx.music.get_busy()
         if (audioPlaying == True): 
-            if (mx.music.get_pos() > audio_pos + 100):
+            if (mx.music.get_pos() > audio_pos + 50):
                 audio_pos = mx.music.get_pos()
                 if (i < len(energyList)):
                     energy = energyList[i]
