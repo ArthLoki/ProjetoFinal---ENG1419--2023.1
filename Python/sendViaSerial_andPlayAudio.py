@@ -29,20 +29,20 @@ def playAudio(mySerial, mx, audio_path):
                 audio_pos = mx.music.get_pos()
                 if (i < len(energyList)):
                     energy = energyList[i]
-                    # energy_str = str(energy)
+                    energy_str = (str(energy).split("."))[0]
+                    len_energy_str = len(energy_str)
+                    diff = 3 - len_energy_str
+
                     # Character 
-                    sendCommandViaSerial(mySerial, energy)
+                    sendCommandViaSerial(mySerial, energy_str, diff)
 
                     # Audio
-                    text2sendViaSerial = "falando " + str(energyList[i]) + "\n"
-                    # print("[INFO] Serial: falando " + str(energyList[i]))
+                    text2sendViaSerial = "falando " + (diff * "0") + energy_str + "\n"
                     mySerial.write(text2sendViaSerial.encode("UTF-8"))
 
                     serial_thread = Thread(target=getFromSerial, args = [mySerial])
                     serial_thread.daemon = True
                     serial_thread.start()
-
-                    # getFromSerial(mySerial)
 
                 i += 1
         else:
@@ -52,16 +52,13 @@ def playAudio(mySerial, mx, audio_path):
 
 def endAudio(mySerial, mx):
     text2sendViaSerial = "fim\n"
-    # print("[INFO] Serial: fim")
     mySerial.write(text2sendViaSerial.encode("UTF-8"))
-    # mx.music.pause()
     mx.music.stop()
     mx.quit()
     return
 
-def sendCommandViaSerial(mySerial, energy):
-    commandCharacter = "personalidade " + str(energy) + "\n"
-    # print("[INFO] Serial: personalidade " + str(energy))
+def sendCommandViaSerial(mySerial, energy, diff):
+    commandCharacter = "personalidade " + (diff * "0") + energy + "\n"
     mySerial.write(commandCharacter.encode("UTF-8"))
     return
 
@@ -83,10 +80,10 @@ def mainPlayAudio(mySerial, audio_path):
 
     return
 
-# def testing():
-#     mySerial = Serial("COM5", baudrate=9600, timeout=0.1)
-#     audio_path = "voiceFiles/answers/answer.mp3"
-#     mainPlayAudio(mySerial, audio_path)
-#     return
+def testing():
+    mySerial = Serial("COM5", baudrate=9600, timeout=0.1)
+    audio_path = "voiceFiles/answers/answer.mp3"
+    mainPlayAudio(mySerial, audio_path)
+    return
 
-# testing()
+testing()
