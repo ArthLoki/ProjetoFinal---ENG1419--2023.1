@@ -30,4 +30,4 @@ def call_gpt(prompt):
 
     return collected_message
 
-call_gpt("Disserte sobre os animais do norte do planeta")
+#call_gpt("Disserte sobre os animais do norte do planeta")
