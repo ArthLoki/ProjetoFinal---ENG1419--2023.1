@@ -1,25 +1,25 @@
 from tkinter import *
 from tkinter import scrolledtext
+from subprocess import Popen, PIPE, run
 import os
 from threading import Thread
-from generateVoiceFromText_tts import text2voice
-import openai
-from subprocess import Popen
-import whisper
+from generateVoiceFromText_tts import text2voice, getResponseChatGPT
 from os import system
+import whisper
 
 global aplicativo
 aplicativo = None
 
 janela = Tk()
-janela.title("Ice Cream V")
+janela.title("Ice Cream IV")
 
 canvas = Canvas(janela, width=450, height=520)
 canvas.pack()
 
-global botau1,textobotao1,texto1, tipo, dictTipos, texto_final
+global botau1,textobotao1,texto1, tipo, dictTipos, texto_final, respostaChatGPT
 botau1 = False
 tipo = ''
+respostaChatGPT = ''
 
 dictTipos = {'Xuxa': 'xuxa', 'Robo': 'Robo', "Mulher 1": "Mulher 1", "William Bonner": "William Bonner"}
 
@@ -58,8 +58,13 @@ def whisper_func():
     texto1.config(state='normal')    
     texto1.insert(END, texto_final)
     texto1.config(state='disable')
-    # openai_thread = Thread(target = text2voice, args = [texto_final, dictTipos[tipo.get()]])
-    # openai_thread.start()
+    respostaChatGPT = getResponseChatGPT(texto_final)
+    texto2.config(state='normal')    
+    texto2.insert(END, respostaChatGPT)
+    texto2.config(state='disable')
+
+    openai_thread = Thread(target = text2voice, args = [respostaChatGPT, dictTipos[tipo.get()]])
+    openai_thread.start()
 
 
 
@@ -73,8 +78,11 @@ def imprimir_mensagem1():
         texto1.config(state='normal')
         texto1.delete("1.0", END)
         texto1.config(state='disable')
+        texto2.config(state='normal')
+        texto2.delete("1.0", END)
+        texto2.config(state='disable')
         global aplicativo
-        comando = ["ffmpeg", "-y", "-f", "dshow", "-i", "audio=@device_cm_{33D9A762-90C8-11D0-BD43-00A0C911CE86}\wave_{E583998B-419A-4CE4-896B-85202F906BD0}", "-t", "00:30", "audio.wav"]
+        comando = ["ffmpeg", "-y", "-f", "dshow", "-i", "audio=Microphone (Synaptics SmartAudio HD)", "-t", "00:30", "voiceFiles/questions/question.wav"]
         aplicativo = Popen(comando)
         print("Iniciando gravação de áudio...\n\n")
     else:
