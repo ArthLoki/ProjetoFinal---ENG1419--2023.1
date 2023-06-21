@@ -4,6 +4,8 @@ from subprocess import Popen, PIPE, run
 import os
 from threading import Thread
 from generateVoiceFromText_tts import text2voice, getResponseChatGPT
+import whisper
+from os import system
 
 global aplicativo
 aplicativo = None
@@ -19,9 +21,9 @@ botau1 = False
 tipo = ''
 respostaChatGPT = ''
 
-dictTipos = {'Xuxa': 'xuxa', 'Robo': 'Robo', "Mulher 1": "Mulher 1", "William Bonner": "William Bonner"}
+dictTipos = {'Xuxa': {'nome': 'xuxa', 'idioma': 'portugues br', 'personalidade': 'feliz'}, 'Robo': {'nome': 'Robo', 'idioma': 'portugues br', 'personalidade': 'triste'}, "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'personalidade': 'normal'}, "William Bonner": {'nome': 'William Bonner', 'idioma': 'portugues br', 'personalidade': 'cansado'}, "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'personalidade': 'feliz'}, "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'personalidade': 'zangado'}, "Elizabeth Olsen": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'personalidade': 'triste'}, "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'personalidade': 'feliz'}}
 
-def whisper():
+def whisper_func():
     global aplicativo, botau1,textobotao1,texto1, tipo
 
     if aplicativo != None:
@@ -30,6 +32,8 @@ def whisper():
         
         print("\n\n Parando gravação de áudio...\n\n")
         
+        system("ffmpeg -y -i audio.wav -acodec libopus audio.ogg")
+
         print("\n\n Convertendo o audio em texto: \n\n")
         
         botau1 = False
@@ -39,36 +43,28 @@ def whisper():
         textobotao1.pack()
         textobotao1.place(x=40, y=70)
 
-        # os.system("pip install -U openai-whisper")
-        # os.system("start ffmpeg.exe")
-        def out(command):
-            result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
-            return result.stdout
+        model = whisper.load_model('base')
+        audio_file = 'audio.ogg'
 
-        texto = out("whisper voiceFiles/questions/question.wav --model medium")
-        num_timeStamps = texto.count(']')
-        texto_final = ""
-        for i in range(num_timeStamps):
-            indice_inicial = texto.find(']')
-            indice_final = texto[indice_inicial:].find('\n')
-            texto_final += texto[indice_inicial+1:indice_final+indice_inicial]
-            texto = texto[indice_final+indice_inicial+1:]
+        # Iniciar a transcrição do áudio
+        transcribe = model.transcribe(audio_file, fp16=False)
 
         print("\n Resultado: \n")
-        print(texto_final)
+        # Imprimir a transcrição final completa
+        texto_final = transcribe['text']
+        print(texto_final, "\n")
 
     textobotao1.destroy()
     texto1.config(state='normal')    
     texto1.insert(END, texto_final)
     texto1.config(state='disable')
+    texto_final = "Responda a mensagem a seguir fingindo ser {} falando no idioma {}. ".format(tipo.get(),dictTipos[tipo.get()]['idioma']) + texto_final
     respostaChatGPT = getResponseChatGPT(texto_final)
     texto2.config(state='normal')    
     texto2.insert(END, respostaChatGPT)
     texto2.config(state='disable')
-
-    openai_thread = Thread(target = text2voice, args = [respostaChatGPT, dictTipos[tipo.get()]])
+    openai_thread = Thread(target = text2voice, args = [respostaChatGPT, dictTipos[tipo.get()]['nome']])
     openai_thread.start()
-
 
 
 def imprimir_mensagem1():
@@ -85,11 +81,11 @@ def imprimir_mensagem1():
         texto2.delete("1.0", END)
         texto2.config(state='disable')
         global aplicativo
-        comando = ["ffmpeg", "-y", "-f", "dshow", "-i", "audio=Microphone (Synaptics SmartAudio HD)", "-t", "00:30", "voiceFiles/questions/question.wav"]
+        comando = ["ffmpeg", "-y", "-f", "dshow", "-i", "audio=Microfone (2- USB2.0 MIC)", "-t", "00:30", "audio.wav"]
         aplicativo = Popen(comando)
         print("Iniciando gravação de áudio...\n\n")
     else:
-        texto_thread = Thread(target = whisper)
+        texto_thread = Thread(target = whisper_func)
 
         texto_thread.start()
 
@@ -101,7 +97,7 @@ personagem = Label(janela, text="Personagem")
 personagem.place(x=20, y=20)
 
 tipo = StringVar(value="Robo")  # essa variável vai guardar a opção escolhida pelo usuário
-campo_personagem = OptionMenu(janela, tipo, "Xuxa", "Robo","William Bonner","Mulher 1")
+campo_personagem = OptionMenu(janela, tipo, "Xuxa", "Robo","William Bonner","Mulher 1", "Mario Bros", "Darth Vader","Elizabeth Olsen","Gato de Botas")
 campo_personagem.config(width=40)
 campo_personagem.place(x=20, y=20)
 
