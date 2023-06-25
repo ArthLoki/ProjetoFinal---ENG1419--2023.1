@@ -32,7 +32,7 @@ def whisper_func():
         
         print("\n\n Parando gravação de áudio...\n\n")
         
-        system("ffmpeg -y -i audio.wav -acodec libopus audio.ogg")
+        system("ffmpeg -y -i voiceFiles/questions/question.wav -acodec libopus voiceFiles/questions/question.ogg")
 
         print("\n\n Convertendo o audio em texto: \n\n")
         
@@ -44,7 +44,7 @@ def whisper_func():
         textobotao1.place(x=40, y=70)
 
         model = whisper.load_model('base')
-        audio_file = 'audio.ogg'
+        audio_file = 'voiceFiles/questions/question.ogg'
 
         # Iniciar a transcrição do áudio
         transcribe = model.transcribe(audio_file, fp16=False)

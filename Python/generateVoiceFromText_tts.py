@@ -73,9 +73,8 @@ def get_tts_token(model_name):
 
     for i in range(len(json_data)):
         data = json_data[i]
-        if (data['ietf_primary_language_subtag'] == 'pt'):
-            if (model_name.lower() == data['title'].lower() or model_name.lower() == data['maybe_suggested_unique_bot_command']):
-                return data['model_token']
+        if (model_name.lower() == data['title'].lower() or model_name.lower() == data['maybe_suggested_unique_bot_command']):
+            return data['model_token']
     return ''
 
 
@@ -157,18 +156,18 @@ def getVoice_fakeyou(responseChatGPT, tts_model_token):
 def text2voice(responseChatGPT, character):
 
     # Serial variable
-    mySerial = Serial("COM5", baudrate=9600, timeout=0.1)
+    mySerial = Serial("COM12", baudrate=9600, timeout=0.1)
     # mySerial = None
 
     # convert text to voice
     if (character == 'Robo'):
         getVoice_gtts(responseChatGPT)
         audio_path = 'voiceFiles/answers/answer.mp3'
-        mainPlayAudio(mySerial, audio_path)
+        mainPlayAudio(mySerial, audio_path, character)
     elif (character == 'Mulher 1'):
         getVoice_pyttsx3(responseChatGPT)
         audio_path = 'voiceFiles/answers/answer.mp3'
-        mainPlayAudio(mySerial, audio_path)
+        mainPlayAudio(mySerial, audio_path, character)
     else:
         # get tts_model_token
         tts_model_token = get_tts_token(character)
@@ -177,7 +176,7 @@ def text2voice(responseChatGPT, character):
         if (tts_model_token != ''):
             getVoice_fakeyou(responseChatGPT, tts_model_token)
             audio_path = 'voiceFiles/answers/answer.wav'
-            mainPlayAudio(mySerial, audio_path)
+            mainPlayAudio(mySerial, audio_path, character)
         else:
             print("Modelo de voz não encontrado")
     return

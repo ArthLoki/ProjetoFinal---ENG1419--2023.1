@@ -7,8 +7,19 @@ from calcula_energia_audio import createEnergyList
 global audioPlaying
 audioPlaying = False
 
-def playAudio(mySerial, mx, audio_path):
-    global audioPlaying
+global dictTipos
+
+dictTipos = {'Xuxa': {'nome': 'xuxa', 'idioma': 'portugues br', 'personalidade': 'feliz'}, 
+            'Robo': {'nome': 'Robo', 'idioma': 'portugues br', 'personalidade': 'triste'}, 
+            "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'personalidade': 'normal'},
+            "William Bonner": {'nome': 'William Bonner', 'idioma': 'portugues br', 'personalidade': 'cansado'},
+            "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'personalidade': 'feliz'},
+            "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'personalidade': 'zangado'}, 
+            "Elizabeth Olsen": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'personalidade': 'triste'},
+            "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'personalidade': 'feliz'}}
+
+def playAudio(mySerial, mx, audio_path, character):
+    global audioPlaying, dictTipos
 
     audio_pos = 0
 
@@ -16,6 +27,9 @@ def playAudio(mySerial, mx, audio_path):
 
     audioPlaying = mx.music.get_busy()
     mixer = mx.get_init()
+
+    # Character 
+    sendCommandViaSerial(mySerial, dictTipos[character]['personalidade'])
 
     mx.music.load(audio_path)
     mx.music.set_volume(0.2)
@@ -29,12 +43,9 @@ def playAudio(mySerial, mx, audio_path):
                 audio_pos = mx.music.get_pos()
                 if (i < len(energyList)):
                     energy = energyList[i]
-                    energy_str = (str(energy).split("."))[0]
+                    energy_str = str(int(energy))
                     len_energy_str = len(energy_str)
                     diff = 3 - len_energy_str
-
-                    # Character 
-                    sendCommandViaSerial(mySerial, energy_str, diff)
 
                     # Audio
                     text2sendViaSerial = "falando " + (diff * "0") + energy_str + "\n"
@@ -46,7 +57,13 @@ def playAudio(mySerial, mx, audio_path):
 
                 i += 1
         else:
-            endAudio(mySerial, mx)
+            # endAudio(mySerial, mx)
+            text2sendViaSerial = "fim\n"
+            mySerial.write(text2sendViaSerial.encode("UTF-8"))
+            mx.music.stop()
+            mx.quit()
+            break
+
         mixer = mx.get_init()
     return
 
@@ -57,8 +74,8 @@ def endAudio(mySerial, mx):
     mx.quit()
     return
 
-def sendCommandViaSerial(mySerial, energy, diff):
-    commandCharacter = "personalidade " + (diff * "0") + energy + "\n"
+def sendCommandViaSerial(mySerial, characterPersonality):
+    commandCharacter = "personalidade " + characterPersonality + "\n"
     mySerial.write(commandCharacter.encode("UTF-8"))
     return
 
@@ -70,20 +87,20 @@ def getFromSerial(mySerial):
         print("Texto recebido pela Serial: ", textReceived)
     sleep(0.1)
 
-def mainPlayAudio(mySerial, audio_path):
+def mainPlayAudio(mySerial, audio_path, character):
     if (mySerial != None):
         mx.init()
         # playAudio(mySerial, mx, audio_path)
-        audio_thread = Thread(target = playAudio, args = [mySerial, mx, audio_path])
+        audio_thread = Thread(target = playAudio, args = [mySerial, mx, audio_path, character])
         audio_thread.start()
         audio_thread.join()
 
     return
 
 def testing():
-    mySerial = Serial("COM5", baudrate=9600, timeout=0.1)
+    mySerial = Serial("COM12", baudrate=9600, timeout=0.1)
     audio_path = "voiceFiles/answers/answer.mp3"
-    mainPlayAudio(mySerial, audio_path)
+    mainPlayAudio(mySerial, audio_path, 'Robo')
     return
 
 testing()

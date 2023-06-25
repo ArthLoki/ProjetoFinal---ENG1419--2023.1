@@ -68,7 +68,7 @@ def detectando_faces():
                 else:
                     dist = distancia
                     atualiza_valores(x,y,w,h)
-   
+
         #guardando no dicionario
         dic['x'] = x_novo
         dic['y'] = y_novo
@@ -92,7 +92,6 @@ def detectando_faces():
         #cv2.imshow('Detecção de Faces', image)
         #cv2.waitKey(0)
         #cv2.destroyAllWindows()
-    
 
 detectando_faces()
 
