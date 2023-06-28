@@ -51,18 +51,22 @@ def playAudio(mySerial, mx, audio_path, character):
                     text2sendViaSerial = "falando " + (diff * "0") + energy_str + "\n"
                     mySerial.write(text2sendViaSerial.encode("UTF-8"))
 
-                    serial_thread = Thread(target=getFromSerial, args = [mySerial])
-                    serial_thread.daemon = True
-                    serial_thread.start()
+                    # serial_thread = Thread(target=getFromSerial, args = [mySerial])
+                    # serial_thread.daemon = True
+                    # serial_thread.start()
+
+                    if (i >= len(energyList)):
+                        endAudio(mySerial, mx)
+                        break
 
                 i += 1
-        else:
-            # endAudio(mySerial, mx)
-            text2sendViaSerial = "fim\n"
-            mySerial.write(text2sendViaSerial.encode("UTF-8"))
-            mx.music.stop()
-            mx.quit()
-            break
+        # else:
+        #     endAudio(mySerial, mx)
+        #     # text2sendViaSerial = "fim\n"
+        #     # mySerial.write(text2sendViaSerial.encode("UTF-8"))
+        #     # mx.music.stop()
+        #     # mx.quit()
+        #     break
 
         mixer = mx.get_init()
     return
@@ -90,17 +94,16 @@ def getFromSerial(mySerial):
 def mainPlayAudio(mySerial, audio_path, character):
     if (mySerial != None):
         mx.init()
-        # playAudio(mySerial, mx, audio_path)
         audio_thread = Thread(target = playAudio, args = [mySerial, mx, audio_path, character])
         audio_thread.start()
         audio_thread.join()
 
     return
 
-def testing():
-    mySerial = Serial("COM12", baudrate=9600, timeout=0.1)
-    audio_path = "voiceFiles/answers/answer.mp3"
-    mainPlayAudio(mySerial, audio_path, 'Robo')
-    return
+# def testing():
+#     mySerial = Serial("COM12", baudrate=9600, timeout=0.1)
+#     audio_path = "voiceFiles/answers/answer.mp3"
+#     mainPlayAudio(mySerial, audio_path, 'Robo')
+#     return
 
-testing()
+# testing()

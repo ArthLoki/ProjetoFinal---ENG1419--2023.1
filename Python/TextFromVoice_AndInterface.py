@@ -44,7 +44,8 @@ def whisper_func():
         textobotao1.place(x=40, y=70)
 
         model = whisper.load_model('base')
-        audio_file = 'voiceFiles/questions/question.ogg'
+        # audio_file = 'voiceFiles/questions/question.ogg'
+        audio_file = 'audio.wav'
 
         # Iniciar a transcrição do áudio
         transcribe = model.transcribe(audio_file, fp16=False)
@@ -81,7 +82,7 @@ def imprimir_mensagem1():
         texto2.delete("1.0", END)
         texto2.config(state='disable')
         global aplicativo
-        comando = ["ffmpeg", "-y", "-f", "dshow", "-i", "audio=Microfone (2- USB2.0 MIC)", "-t", "00:30", "audio.wav"]
+        comando = ["ffmpeg", "-y", "-f", "dshow", "-i", "audio=Microphone (Synaptics SmartAudio HD)", "-t", "00:30", "audio.wav"]  # Microfone Luiza: Microfone (Synaptics SmartAudio HD)
         aplicativo = Popen(comando)
         print("Iniciando gravação de áudio...\n\n")
     else:

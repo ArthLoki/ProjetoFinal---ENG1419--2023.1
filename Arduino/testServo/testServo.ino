@@ -42,17 +42,22 @@ void loop(){
 }
 
 
-void changeMouthMovementAngle(int pinServo, int servoAngle){
+void changeMovementAngle(int pinServo, int servoAngle){
 
   if (pinServo == 2 || pinServo == 3){
-    mouth1.write(90 - servoAngle);
-    mouth2.write(90 + servoAngle);
+    mouth1.write(90 + servoAngle);
+    mouth2.write(90 - servoAngle);
   } else if (pinServo == 4 || pinServo == 5) {
     eye1.write(servoAngle);
     eye2.write(servoAngle);    
   } else if (pinServo == 6 || pinServo == 7) {
-    eyebrow1.write(90 - servoAngle);
-    eyebrow2.write(90 - servoAngle);
+    if (servoAngle <= 90) {
+      eyebrow1.write(90 + servoAngle);
+      eyebrow2.write(90 - servoAngle);
+    } else if (servoAngle > 90) {
+      eyebrow1.write(servoAngle - 90);
+      eyebrow2.write(servoAngle - 20);
+    }
   }
   delay(5);
 }
@@ -70,7 +75,7 @@ void getCommandFromSerial(){
 
       Serial.println(angleChoice);
 
-      changeMouthMovementAngle(pinChoice, angleChoice);
+      changeMovementAngle(pinChoice, angleChoice);
     }
   }
 }

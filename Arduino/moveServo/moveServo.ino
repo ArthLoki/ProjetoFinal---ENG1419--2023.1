@@ -16,11 +16,12 @@ int mouthAngle2 = 90;
 // min and max angle related to the energy given
 int serialMouthAngle1 = 90;
 int serialMouthAngle2 = 90;
-int mouthMaxOpening = 60;
+int mouthMaxOpening = 40;
 
 // energy
 int mouthEnergy = 0;
-int minMouthEnergy = 15;
+int mouthEnergyConstrain1 = 0;
+int mouthEnergyConstrain2 = 0;
 
 // personality
 String characterPersonality = "";
@@ -29,7 +30,7 @@ String characterPersonality = "";
 
 // default functions
 void setup(){
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // Mouth
     mouth1.attach(pinMouth1);
@@ -48,6 +49,9 @@ void setup(){
 
     eye1.write(90);
     eye2.write(90);
+
+    eyebrow1.write(90);
+    eyebrow2.write(90);
 }
 
 void loop(){
@@ -60,22 +64,21 @@ void getCommandFromSerial(){
     String comando = Serial.readStringUntil('\n');
     comando.trim();
 
-    Serial.println(comando);
+    // Serial.println(comando);
 
     if (comando.startsWith("personalidade ")) {
       characterPersonality = comando.substring(14);
-      Serial.println(characterPersonality);     
+      changeEyebrowMovementAngle();     
     }
 
     if (comando.startsWith("falando ")){
       mouthEnergy = (comando.substring(8,11)).toInt();
 
-      if (mouthEnergy <= minMouthEnergy){
-        mouthEnergy = minMouthEnergy;
-      }
-
       serialMouthAngle1 = map(mouthEnergy, 0, 100, 90, 90 + mouthMaxOpening);
       serialMouthAngle2 = map(mouthEnergy, 0, 100, 90, 90 - mouthMaxOpening);
+
+      serialMouthAngle1 = constrain(serialMouthAngle1, 90, 90 + mouthMaxOpening);
+      serialMouthAngle2 = constrain(serialMouthAngle2, 90, 90 - mouthMaxOpening);
 
       changeMouthMovementAngle();
     }
@@ -83,6 +86,9 @@ void getCommandFromSerial(){
     if (comando == "fim"){
       mouth1.write(90);
       mouth2.write(90);
+      
+      eyebrow1.write(90);
+      eyebrow2.write(90);
     }
   }
 }
@@ -107,5 +113,23 @@ void changeMouthMovementAngle(){
     mouth2.write(serialMouthAngle2);
   }
 
-  delay(5);
+  // delay(5);
+}
+
+void changeEyebrowMovementAngle(){
+  if (characterPersonality == "triste" || characterPersonality == "cansado"){
+    eyebrow1.write(60);
+    eyebrow2.write(130);
+  } else if (characterPersonality == "normal" || characterPersonality == "feliz"){
+    eyebrow1.write(90);
+    eyebrow2.write(90);
+  } else if (characterPersonality == "zangado"){
+    eyebrow1.write(120);
+    eyebrow2.write(60);
+  } else {
+    eyebrow1.write(90);
+    eyebrow2.write(90);
+  }
+
+  // delay(5);
 }

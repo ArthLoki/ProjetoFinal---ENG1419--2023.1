@@ -156,7 +156,7 @@ def getVoice_fakeyou(responseChatGPT, tts_model_token):
 def text2voice(responseChatGPT, character):
 
     # Serial variable
-    mySerial = Serial("COM12", baudrate=9600, timeout=0.1)
+    mySerial = Serial("COM12", baudrate=115200, timeout=0.1)
     # mySerial = None
 
     # convert text to voice
