@@ -10,6 +10,9 @@ from os import system
 import cv2
 import math
 
+# Serial
+from serial import Serial
+
 global aplicativo
 aplicativo = None
 
@@ -41,6 +44,11 @@ imagem = 0
 global faces
 faces = []
 
+# Serial variable
+global mySerial
+mySerial = Serial("COM12", baudrate=115200, timeout=0.1)
+# mySerial = None
+
 def atualiza_valores(x,y,w,h):
     global x_novo, y_novo, w_novo, h_novo       
     x_novo = x
@@ -52,6 +60,7 @@ def streaming():
     
     global x_novo, y_novo, w_novo, h_novo
     global imagem, faces, dic, iteracoes
+    global mySerial
     
     stream = cv2.VideoCapture(0)
     
@@ -110,11 +119,14 @@ def streaming():
         largura_tela = int(stream.get(cv2.CAP_PROP_FRAME_WIDTH))
         centro_da_tela = largura_tela//2
         angulo = (90*centro_x)/centro_da_tela
-        print(angulo)
+        angulo_str = str(int(180 - angulo))
+        diff = 3 - len(angulo_str)
+        textSerialAngulo = "olho " + (diff * "0") + angulo_str + "\n"
+        mySerial.write(textSerialAngulo.encode("UTF-8"))
 
 def deteccao():
     global imagem, faces
-    
+
     copia = imagem    
     
     for (x, y, w, h) in faces:
@@ -132,6 +144,7 @@ def chamando_streaming():
     
 def tudo_func():
     global aplicativo, botau1,textobotao1,texto1, tipo
+    global mySerial
 
     if aplicativo != None:
         aplicativo.terminate()
@@ -169,7 +182,7 @@ def tudo_func():
     texto2.config(state='normal')    
     texto2.insert(END, respostaChatGPT)
     texto2.config(state='disable')
-    openai_thread = Thread(target = text2voice, args = [respostaChatGPT, dictTipos[tipo.get()]['nome']])
+    openai_thread = Thread(target = text2voice, args = [mySerial, respostaChatGPT, dictTipos[tipo.get()]['nome']])
     openai_thread.start()
 
 def whisper_func():
@@ -209,6 +222,8 @@ def whisper_func():
     
 
 def resposta():
+    global mySerial
+
     texto_final = texto1.get("1.0", END)
     print(texto_final)
     texto_final = "Responda a mensagem a seguir fingindo ser {} falando no idioma {}. ".format(tipo.get(),dictTipos[tipo.get()]['idioma']) + texto_final
@@ -222,7 +237,7 @@ def resposta():
     
 def voz_resposta():
     respostaChatGPT = texto2.get("1.0", END)
-    openai_thread = Thread(target = text2voice, args = [respostaChatGPT, dictTipos[tipo.get()]['nome']])
+    openai_thread = Thread(target = text2voice, args = [mySerial, respostaChatGPT, dictTipos[tipo.get()]['nome']])
     openai_thread.start()
     
     

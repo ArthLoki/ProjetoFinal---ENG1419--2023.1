@@ -31,6 +31,7 @@ def playAudio(mySerial, mx, audio_path, character):
     # Character 
     sendCommandViaSerial(mySerial, dictTipos[character]['personalidade'])
 
+    # Music
     mx.music.load(audio_path)
     mx.music.set_volume(0.2)
     mx.music.play()
@@ -55,18 +56,10 @@ def playAudio(mySerial, mx, audio_path, character):
                     # serial_thread.daemon = True
                     # serial_thread.start()
 
-                    if (i >= len(energyList)):
-                        endAudio(mySerial, mx)
-                        break
-
                 i += 1
-        # else:
-        #     endAudio(mySerial, mx)
-        #     # text2sendViaSerial = "fim\n"
-        #     # mySerial.write(text2sendViaSerial.encode("UTF-8"))
-        #     # mx.music.stop()
-        #     # mx.quit()
-        #     break
+        else:
+            endAudio(mySerial, mx)
+            break
 
         mixer = mx.get_init()
     return
@@ -84,20 +77,19 @@ def sendCommandViaSerial(mySerial, characterPersonality):
     return
 
 
-def getFromSerial(mySerial):
-    # while True:
-    if mySerial != None:
-        textReceived = mySerial.readline().decode().strip()
-        print("Texto recebido pela Serial: ", textReceived)
-    sleep(0.1)
+# def getFromSerial(mySerial):
+#     # while True:
+#     if mySerial != None:
+#         textReceived = mySerial.readline().decode().strip()
+#         print("Texto recebido pela Serial: ", textReceived)
+#     sleep(0.1)
 
 def mainPlayAudio(mySerial, audio_path, character):
     if (mySerial != None):
         mx.init()
         audio_thread = Thread(target = playAudio, args = [mySerial, mx, audio_path, character])
+        audio_thread.daemon = True
         audio_thread.start()
-        audio_thread.join()
-
     return
 
 # def testing():

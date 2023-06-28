@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 import os
 
 # Serial + playAudio
-from serial import Serial
+# from serial import Serial
 # from play_audio import playAudio
 from sendViaSerial_andPlayAudio import mainPlayAudio
 
@@ -33,6 +33,10 @@ password = os.getenv("PASSWORD_FAKEYOU")
 
 fy = fakeyou.FakeYou(verbose=True)
 fy.login(username, password)
+
+# global audioCreated, audio_path_replay
+# audioCreated = False
+# audio_path_replay = ""
 
 # Functions
 # 1. gtts
@@ -46,7 +50,7 @@ def getVoice_pyttsx3(responseChatGPT):
     engine = pyttsx3.init()
 
     """RATE"""
-    engine.setProperty('rate', 200)
+    engine.setProperty('rate', 125)
 
     """VOLUME"""
     engine.setProperty('volume', 1.0)
@@ -56,7 +60,7 @@ def getVoice_pyttsx3(responseChatGPT):
     engine.setProperty('voice', voices[2].id)
 
     ## Save into a file
-    engine.save_to_file(responseChatGPT, 'voiceFiles/answers/answer.mp3')
+    engine.save_to_file(responseChatGPT, 'voiceFiles/answers/answer.wav')
 
     ## DO NOT DELETE
     engine.runAndWait()
@@ -153,20 +157,26 @@ def getVoice_fakeyou(responseChatGPT, tts_model_token):
     return
 
 # Conversion according to the question/prompt and chosen character
-def text2voice(responseChatGPT, character):
+def text2voice(mySerial, responseChatGPT, character):
+
+    # global audioCreated, audio_path_replay
 
     # Serial variable
-    mySerial = Serial("COM12", baudrate=115200, timeout=0.1)
+    # mySerial = Serial("COM12", baudrate=115200, timeout=0.1)
     # mySerial = None
 
     # convert text to voice
     if (character == 'Robo'):
         getVoice_gtts(responseChatGPT)
         audio_path = 'voiceFiles/answers/answer.mp3'
+        # audioCreated = True
+        # audio_path_replay = audio_path
         mainPlayAudio(mySerial, audio_path, character)
     elif (character == 'Mulher 1'):
         getVoice_pyttsx3(responseChatGPT)
-        audio_path = 'voiceFiles/answers/answer.mp3'
+        audio_path = 'voiceFiles/answers/answer.wav'
+        # audio_path_replay = audio_path
+        # audioCreated = True
         mainPlayAudio(mySerial, audio_path, character)
     else:
         # get tts_model_token
@@ -176,8 +186,11 @@ def text2voice(responseChatGPT, character):
         if (tts_model_token != ''):
             getVoice_fakeyou(responseChatGPT, tts_model_token)
             audio_path = 'voiceFiles/answers/answer.wav'
+            # audioCreated = True
+            # audio_path_replay = audio_path
             mainPlayAudio(mySerial, audio_path, character)
         else:
+            audioCreated = False
             print("Modelo de voz não encontrado")
     return
 

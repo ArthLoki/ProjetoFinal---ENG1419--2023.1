@@ -26,6 +26,9 @@ int mouthEnergyConstrain2 = 0;
 // personality
 String characterPersonality = "";
 
+// eyes
+int eyeAngle = 0;
+
 // FUNCTIONS
 
 // default functions
@@ -64,7 +67,7 @@ void getCommandFromSerial(){
     String comando = Serial.readStringUntil('\n');
     comando.trim();
 
-    // Serial.println(comando);
+//    Serial.println(comando);
 
     if (comando.startsWith("personalidade ")) {
       characterPersonality = comando.substring(14);
@@ -90,6 +93,12 @@ void getCommandFromSerial(){
       eyebrow1.write(90);
       eyebrow2.write(90);
     }
+
+    if (comando.startsWith("olho ")){
+      eyeAngle = (comando.substring(5)).toInt();
+      eyeAngle = constrain(eyeAngle, 45, 135);
+      changeEyeMovementAngle();
+    }
   }
 }
 
@@ -112,8 +121,6 @@ void changeMouthMovementAngle(){
   } else if (mouthAngle2 >= 90){
     mouth2.write(serialMouthAngle2);
   }
-
-  // delay(5);
 }
 
 void changeEyebrowMovementAngle(){
@@ -130,6 +137,9 @@ void changeEyebrowMovementAngle(){
     eyebrow1.write(90);
     eyebrow2.write(90);
   }
+}
 
-  // delay(5);
+void changeEyeMovementAngle(){
+  eye1.write(eyeAngle);
+  eye2.write(eyeAngle);
 }
