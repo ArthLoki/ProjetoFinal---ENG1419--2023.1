@@ -1,6 +1,11 @@
 import cv2
 import math
 
+global imagem
+imagem = 0
+global faces
+faces = []
+
 def atualiza_valores(x,y,w,h):
     global x_novo, y_novo, w_novo, h_novo       
     x_novo = x
@@ -8,22 +13,15 @@ def atualiza_valores(x,y,w,h):
     w_novo = w
     h_novo = h
     
-def detectando_faces():
+def streaming(dic, iteracoes):
     
     global x_novo, y_novo, w_novo, h_novo
-    global dic
-    dic = {}
-    dic['x'] = 10
-    dic['y'] = 10
-    dic['w'] = 10
-    dic['h'] = 10
-
-    global iteracoes
-    iteracoes = 0
+    global imagem, faces
     
     stream = cv2.VideoCapture(0)
     
     while True:
+    
         _, imagem = stream.read()
 
         # Carregar o classificador Haar Cascade pré-treinado para detecção de faces
@@ -33,19 +31,16 @@ def detectando_faces():
         gray = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
 
         # Realizar a detecção de faces na imagem
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))    
-
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        
         dist = 1000
         x_novo = dic['x']
         y_novo = dic['y']
         w_novo = dic['w']
         h_novo = dic['h']
-            
-
+        
         # Iterar sobre as faces detectadas
         for (x, y, w, h) in faces:
-            
-            cv2.rectangle(imagem, (x, y), (x+w, y+h), (0, 255, 0), 2)
             
             #calculando o centro da face da ultima posicao
             centro_x1 = dic['x'] + (dic['w'] // 2)
@@ -61,7 +56,7 @@ def detectando_faces():
                 #controlando possiveis "piscadas"
                 if distancia>100:
                     iteracoes = iteracoes + 1
-                    if iteracoes>20:
+                    if iteracoes>3:
                         dist = distancia
                         atualiza_valores(x,y,w,h)
                         iteracoes = 0
@@ -82,18 +77,25 @@ def detectando_faces():
         angulo = (90*centro_x)/centro_da_tela
         print(angulo)
         
-        cv2.imshow("Minha Janela", imagem)
-        # mostra a imagem durante 1 milissegundo
-        # e interrompe loop quando tecla q for pressionada
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+        return angulo
 
-        # Exibir a imagem com as faces detectadas
-        #cv2.imshow('Detecção de Faces', image)
-        #cv2.waitKey(0)
-        #cv2.destroyAllWindows()
+def deteccao():
+    global imagem, faces
+    
+    copia = imagem    
+    
+    for (x, y, w, h) in faces:
+        
+        cv2.rectangle(copia, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    
+    cv2.imshow("Minha Janela", copia)
+    #cv2.waitKey(1)
+        
+    #cv2.stream.release()
+    #cv2.destroyAllWindows()
 
-detectando_faces()
+    # Exibir a imagem com as faces detectadas
+    #cv2.imshow('Detecção de Faces', image)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
 
-cv2.stream.release()
-cv2.destroyAllWindows()
