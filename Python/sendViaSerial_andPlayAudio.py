@@ -3,6 +3,7 @@ from pygame import mixer as mx
 from time import sleep
 from threading import Thread
 from calcula_energia_audio import createEnergyList
+from eyeStreamingAndFaceDetection import getAnguloOlho
 
 global audioPlaying
 audioPlaying = False
@@ -28,6 +29,10 @@ def playAudio(mySerial, mx, audio_path, character):
     audioPlaying = mx.music.get_busy()
     mixer = mx.get_init()
 
+    # Eye
+    angulo_olho = getAnguloOlho()
+    sendEyeCommandViaSerial(angulo_olho, mySerial)
+
     # Character 
     sendCommandViaSerial(mySerial, dictTipos[character]['personalidade'])
 
@@ -46,10 +51,10 @@ def playAudio(mySerial, mx, audio_path, character):
                     energy = energyList[i]
                     energy_str = str(int(energy))
                     len_energy_str = len(energy_str)
-                    diff = 3 - len_energy_str
+                    diff_energy = 3 - len_energy_str
 
                     # Audio
-                    text2sendViaSerial = "falando " + (diff * "0") + energy_str + "\n"
+                    text2sendViaSerial = "falando " + (diff_energy * "0") + energy_str + "\n"
                     mySerial.write(text2sendViaSerial.encode("UTF-8"))
 
                     # serial_thread = Thread(target=getFromSerial, args = [mySerial])
@@ -64,6 +69,14 @@ def playAudio(mySerial, mx, audio_path, character):
         mixer = mx.get_init()
     return
 
+
+'''
+        angulo_str = str(int(180 - angulo))
+        diff = 3 - len(angulo_str)
+        textSerialAngulo = "olho " + (diff * "0") + angulo_str + "\n"
+        mySerial.write(textSerialAngulo.encode("UTF-8"))
+'''
+
 def endAudio(mySerial, mx):
     text2sendViaSerial = "fim\n"
     mySerial.write(text2sendViaSerial.encode("UTF-8"))
@@ -75,6 +88,12 @@ def sendCommandViaSerial(mySerial, characterPersonality):
     commandCharacter = "personalidade " + characterPersonality + "\n"
     mySerial.write(commandCharacter.encode("UTF-8"))
     return
+
+def sendEyeCommandViaSerial(angulo, mySerial):
+    angulo_str = str(int(180 - angulo))
+    diffEye = 3 - len(angulo_str)
+    textSerialAngulo = "olho " + (diffEye * "0") + angulo_str + "\n"
+    mySerial.write(textSerialAngulo.encode("UTF-8"))
 
 
 # def getFromSerial(mySerial):
