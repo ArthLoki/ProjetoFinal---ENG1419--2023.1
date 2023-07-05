@@ -32,6 +32,7 @@ dictTipos = {"Robo": {'nome': 'Robo', 'idioma': 'portugues br', 'especificacao':
              "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'especificacao': 'do jogo Super Mario','personalidade': 'feliz'},
              "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'especificacao': 'dos filmes de Star Wars','personalidade': 'zangado'},
              "Feiticeira Escarlate": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'especificacao': 'da marvel nao explique o contexto', 'personalidade': 'triste'},
+             "Donald Trump": {'nome': 'angrydonaldtrump', 'idioma': 'ingles', 'especificacao': 'utilizando o mesmo tipo de discurso que ele utiliza nos discursos', 'personalidade': 'zangado'},
              "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'especificacao': '', 'personalidade': 'feliz'}}
 
 
@@ -303,7 +304,7 @@ personagem = Label(janela, text="Personagem")
 personagem.place(x=20, y=20)
 
 tipo = StringVar(value="Robo")  # essa variável vai guardar a opção escolhida pelo usuário
-campo_personagem = OptionMenu(janela, tipo, "Robo","Mulher 1", "Mario Bros", "Darth Vader","Feiticeira Escarlate","Gato de Botas")
+campo_personagem = OptionMenu(janela, tipo, "Robo","Mulher 1", "Mario Bros", "Darth Vader","Feiticeira Escarlate","Donald Trump","Gato de Botas")
 campo_personagem.config(width=40)
 campo_personagem.place(x=20, y=20)
 
