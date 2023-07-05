@@ -27,7 +27,13 @@ botau1 = False
 tipo = ''
 respostaChatGPT = ''
 
-dictTipos = {'Xuxa': {'nome': 'xuxa', 'idioma': 'portugues br', 'personalidade': 'feliz'}, 'Robo': {'nome': 'Robo', 'idioma': 'portugues br', 'personalidade': 'triste'}, "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'personalidade': 'normal'}, "William Bonner": {'nome': 'William Bonner', 'idioma': 'portugues br', 'personalidade': 'cansado'}, "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'personalidade': 'feliz'}, "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'personalidade': 'zangado'}, "Elizabeth Olsen": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'personalidade': 'triste'}, "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'personalidade': 'feliz'}}
+dictTipos = {"Robo": {'nome': 'Robo', 'idioma': 'portugues br', 'especificacao': ''},
+             "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'especificacao': ''},
+             "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'especificacao': 'do jogo Super Mario'},
+             "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'especificacao': 'dos filmes de Star Wars'},
+             "Feiticeira Escarlate": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'especificacao': 'da marvel nao explique o contexto'},
+             "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'especificacao': ''}}
+
 
 global dic
 dic = {}
@@ -183,7 +189,8 @@ def tudo_func():
 
     textobotao1.destroy()
     texto1.insert(END, texto_final)
-    texto_final = "Responda a mensagem a seguir fingindo ser {} falando no idioma {}. ".format(tipo.get(),dictTipos[tipo.get()]['idioma']) + texto_final
+    if tipo.get() != "Robo":
+        texto_final = "Responda a mensagem a seguir fingindo ser {} falando no idioma {}. Lembrando não sai do seu papel de interpretar {}.".format(tipo.get(),dictTipos[tipo.get()]['especificacao'],dictTipos[tipo.get()]['idioma'],tipo.get()) + texto_final
     respostaChatGPT = getResponseChatGPT(texto_final)
     texto2.config(state='normal')    
     texto2.insert(END, respostaChatGPT)
@@ -232,7 +239,8 @@ def resposta():
 
     texto_final = texto1.get("1.0", END)
     print(texto_final)
-    texto_final = "Responda a mensagem a seguir fingindo ser {} falando no idioma {}. ".format(tipo.get(),dictTipos[tipo.get()]['idioma']) + texto_final
+    if tipo.get() != "Robo":
+        texto_final = "Responda a mensagem a seguir fingindo ser {} falando no idioma {}. Lembrando não sai do seu papel de interpretar {}.".format(tipo.get(),dictTipos[tipo.get()]['especificacao'],dictTipos[tipo.get()]['idioma'],tipo.get()) + texto_final
     respostaChatGPT = getResponseChatGPT(texto_final)
     texto2.config(state='normal')
     texto2.delete("1.0", END)
@@ -295,7 +303,7 @@ personagem = Label(janela, text="Personagem")
 personagem.place(x=20, y=20)
 
 tipo = StringVar(value="Robo")  # essa variável vai guardar a opção escolhida pelo usuário
-campo_personagem = OptionMenu(janela, tipo, "Xuxa", "Robo","William Bonner","Mulher 1", "Mario Bros", "Darth Vader","Elizabeth Olsen","Gato de Botas")
+campo_personagem = OptionMenu(janela, tipo, "Robo","Mulher 1", "Mario Bros", "Darth Vader","Feiticeira Escarlate","Gato de Botas")
 campo_personagem.config(width=40)
 campo_personagem.place(x=20, y=20)
 
