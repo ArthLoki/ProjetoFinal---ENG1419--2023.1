@@ -108,6 +108,9 @@ def streaming():
                     dist = distancia
                     atualiza_valores(x,y,w,h)
 
+        if (cv2.waitkey(1) & 0xFF == ord("q")):
+            break
+
         #guardando no dicionario
         dic['x'] = x_novo
         dic['y'] = y_novo
@@ -134,6 +137,9 @@ def deteccao():
             cv2.rectangle(copia, (x, y), (x+w, y+h), (0, 255, 0), 2)
     
     cv2.imshow("Minha Janela", copia)
+
+    # if (waitkey(1) & 0xFF == ord("q")):
+    #     break
     #cv2.waitKey(1)
     #cv2.destroyAllWindows()
 
