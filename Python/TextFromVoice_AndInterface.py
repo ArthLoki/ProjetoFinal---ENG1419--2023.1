@@ -4,6 +4,7 @@ from subprocess import Popen, PIPE, run
 import os
 from threading import Thread
 from generateVoiceFromText_tts import text2voice, getResponseChatGPT
+from sendViaSerial_andPlayAudio import getAudioPlaying
 import whisper
 from os import system
 #from DeteccaoDeRostos import streaming, deteccao
@@ -28,12 +29,12 @@ tipo = ''
 respostaChatGPT = ''
 
 dictTipos = {"Robo": {'nome': 'Robo', 'idioma': 'portugues br', 'especificacao': '', 'personalidade': 'triste'},
-             "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'especificacao': '','personalidade': 'normal'},
-             "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'especificacao': 'do jogo Super Mario','personalidade': 'feliz'},
-             "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'especificacao': 'dos filmes de Star Wars','personalidade': 'zangado'},
-             "Feiticeira Escarlate": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'especificacao': 'da marvel nao explique o contexto', 'personalidade': 'triste'},
-             "Donald Trump": {'nome': 'angrydonaldtrump', 'idioma': 'ingles', 'especificacao': 'utilizando o mesmo tipo de discurso que ele utiliza nos discursos', 'personalidade': 'zangado'},
-             "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'especificacao': '', 'personalidade': 'feliz'}}
+            "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'especificacao': '','personalidade': 'normal'},
+            "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'especificacao': 'do jogo Super Mario','personalidade': 'feliz'},
+            "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'especificacao': 'dos filmes de Star Wars','personalidade': 'zangado'},
+            "Feiticeira Escarlate": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'especificacao': 'da marvel nao explique o contexto', 'personalidade': 'triste'},
+            "Donald Trump": {'nome': 'angrydonaldtrump', 'idioma': 'ingles', 'especificacao': 'utilizando o mesmo tipo de discurso que ele utiliza nos discursos', 'personalidade': 'zangado'},
+            "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'especificacao': '', 'personalidade': 'feliz'}}
 
 
 global dic
@@ -55,6 +56,9 @@ faces = []
 global mySerial
 mySerial = Serial("COM12", baudrate=115200, timeout=0.1)
 # mySerial = None
+
+global audioPlaying
+audioPlaying =  getAudioPlaying()
 
 def atualiza_valores(x,y,w,h):
     global x_novo, y_novo, w_novo, h_novo       
@@ -115,8 +119,8 @@ def streaming():
                     dist = distancia
                     atualiza_valores(x,y,w,h)
 
-        if (cv2.waitkey(1) & 0xFF == ord("q")):
-            break
+        # if (cv2.waitkey(1) & 0xFF == ord("q")):
+        #     break
 
         #guardando no dicionario
         dic['x'] = x_novo
@@ -125,14 +129,16 @@ def streaming():
         dic['h'] = h_novo
         
         #calculando o angulo
-        centro_x = dic['x'] + (dic['w'] / 2)
-        largura_tela = int(stream.get(cv2.CAP_PROP_FRAME_WIDTH))
-        centro_da_tela = largura_tela//2
-        angulo = (90*centro_x)/centro_da_tela
-        angulo_str = str(int(180 - angulo))
-        diff = 3 - len(angulo_str)
-        textSerialAngulo = "olho " + (diff * "0") + angulo_str + "\n"
-        mySerial.write(textSerialAngulo.encode("UTF-8"))
+        audioPlaying = getAudioPlaying()
+        if (audioPlaying == False):
+            centro_x = dic['x'] + (dic['w'] / 2)
+            largura_tela = int(stream.get(cv2.CAP_PROP_FRAME_WIDTH))
+            centro_da_tela = largura_tela//2
+            angulo = (90*centro_x)/centro_da_tela
+            angulo_str = str(int(180 - angulo))
+            diff = 3 - len(angulo_str)
+            textSerialAngulo = "olho " + (diff * "0") + angulo_str + "\n"
+            # mySerial.write(textSerialAngulo.encode("UTF-8"))
 
 def deteccao():
     global imagem, faces
@@ -142,7 +148,7 @@ def deteccao():
     for (x, y, w, h) in faces:
         if (x,y,w,h):
             cv2.rectangle(copia, (x, y), (x+w, y+h), (0, 255, 0), 2)
-    
+
     cv2.imshow("Minha Janela", copia)
 
     # if (waitkey(1) & 0xFF == ord("q")):
@@ -195,7 +201,7 @@ def tudo_func():
     respostaChatGPT = getResponseChatGPT(texto_final)
     texto2.config(state='normal')    
     texto2.insert(END, respostaChatGPT)
-    texto2.config(state='disable')
+    # texto2.config(state='disable')
     openai_thread = Thread(target = text2voice, args = [mySerial, respostaChatGPT, dictTipos[tipo.get()]['nome']])
     openai_thread.start()
 
@@ -245,10 +251,10 @@ def resposta():
     respostaChatGPT = getResponseChatGPT(texto_final)
     texto2.config(state='normal')
     texto2.delete("1.0", END)
-    texto2.config(state='disable')
-    texto2.config(state='normal')    
+    # texto2.config(state='disable')
+    # texto2.config(state='normal')    
     texto2.insert(END, respostaChatGPT)
-    texto2.config(state='disable')
+    # texto2.config(state='disable')
     
 def voz_resposta():
     respostaChatGPT = texto2.get("1.0", END)
@@ -317,7 +323,7 @@ quadro2.place(x=20, y=320)
 texto1 = scrolledtext.ScrolledText(quadro1, wrap=WORD, state='normal')
 texto1.place(x=0, y=0, width=420, height=180)
 
-texto2 = scrolledtext.ScrolledText(quadro2, wrap=WORD, state='disabled')
+texto2 = scrolledtext.ScrolledText(quadro2, wrap=WORD, state='normal')
 texto2.place(x=0, y=0, width=420, height=180)
 
 deteccao_thread = Thread(target = streaming)

@@ -10,16 +10,16 @@ def calculate_audio_energy(audio_data):
 
 # Função de callback para processar o áudio em tempo real
 def audio_callback(data,sample_rate,lista):
-    tempo = 0.025
+    tempo = 0.05
     tempo_max = librosa.get_duration(y=data, sr=sample_rate)
     while(tempo < tempo_max):
-        starter_time = tempo - 0.025  # Tempo de início em segundos
-        end_time = tempo + 0.025  # Tempo de fim em segundos
+        starter_time = tempo - 0.05  # Tempo de início em segundos
+        end_time = tempo + 0.05  # Tempo de fim em segundos
         # Converte o intervalo de tempo para amostras
         start_sample = int(starter_time * sample_rate)
         end_sample = int(end_time * sample_rate)
         lista.append(calculate_audio_energy(data[start_sample:end_sample]))
-        tempo += 0.05
+        tempo += 0.1
 
 # Carrega o arquivo de áudio
 def createEnergyList(nome_audio):

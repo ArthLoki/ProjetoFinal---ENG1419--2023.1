@@ -29,6 +29,16 @@ String characterPersonality = "";
 // eyes
 int eyeAngle = 0;
 
+//Angles
+int AbsAngle1;
+int AbsAngle2;
+int distToGo1;
+int distToGo2;
+
+//Acceleration, speed
+int acceleration = 2;
+int speedMotor = 0;
+
 // FUNCTIONS
 
 // default functions
@@ -59,6 +69,12 @@ void setup(){
 
 void loop(){
   getCommandFromSerial();
+  
+  //mouthAngle1 = mouth1.read();
+ // mouthAngle2 = mouth2.read();
+
+  //int AngleAtual1 = mouthAngle1 - AbsAngle1;
+  //int AngleAtual2 = mouthAngle2 - AbsAngle2; 
 }
 
 // Aux functions
@@ -67,7 +83,7 @@ void getCommandFromSerial(){
     String comando = Serial.readStringUntil('\n');
     comando.trim();
 
-//    Serial.println(comando);
+    // Serial.println(comando);
 
     if (comando.startsWith("personalidade ")) {
       characterPersonality = comando.substring(14);
@@ -75,7 +91,7 @@ void getCommandFromSerial(){
     }
 
     if (comando.startsWith("falando ")){
-      mouthEnergy = (comando.substring(8,11)).toInt();
+      mouthEnergy = (comando.substring(8)).toInt();
 
       serialMouthAngle1 = map(mouthEnergy, 0, 100, 90, 90 + mouthMaxOpening);
       serialMouthAngle2 = map(mouthEnergy, 0, 100, 90, 90 - mouthMaxOpening);
@@ -109,8 +125,12 @@ void changeMouthMovementAngle(){
 
   if (mouthAngle1 >= serialMouthAngle1){
     mouth1.write(90);
+    //AbsAngle1 = 90;
+    //distToGo1 = AbsAngle1/2;
   } else if (mouthAngle1 <= 90){
     mouth1.write(serialMouthAngle1);
+    //AbsAngle1 = serialMouthAngle1;
+    //distToGo1 = AbsAngle1/2;
   }
 
   // mouth2
@@ -118,8 +138,12 @@ void changeMouthMovementAngle(){
 
   if (mouthAngle2 <= serialMouthAngle2){
     mouth2.write(90);
+    //AbsAngle2 = 90;
+    //distToGo2 = AbsAngle2/2;
   } else if (mouthAngle2 >= 90){
     mouth2.write(serialMouthAngle2);
+    //AbsAngle2 = serialMouthAngle2;
+    //distToGo2 = AbsAngle2/2;
   }
 }
 
