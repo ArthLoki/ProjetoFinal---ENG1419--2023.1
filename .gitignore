@@ -5,3 +5,4 @@ Python/__pycache__/connect_openai.cpython-39.pyc
 Python/__pycache__/sendViaSerial_andPlayAudio.cpython-39.pyc
 Python/__pycache__/generateVoiceFromText_tts.cpython-39.pyc
 Python/ffmpeg.exe
+*.pyc
