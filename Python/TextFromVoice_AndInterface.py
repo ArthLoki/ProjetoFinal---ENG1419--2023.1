@@ -27,12 +27,12 @@ botau1 = False
 tipo = ''
 respostaChatGPT = ''
 
-dictTipos = {"Robo": {'nome': 'Robo', 'idioma': 'portugues br', 'especificacao': ''},
-             "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'especificacao': ''},
-             "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'especificacao': 'do jogo Super Mario'},
-             "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'especificacao': 'dos filmes de Star Wars'},
-             "Feiticeira Escarlate": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'especificacao': 'da marvel nao explique o contexto'},
-             "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'especificacao': ''}}
+dictTipos = {"Robo": {'nome': 'Robo', 'idioma': 'portugues br', 'especificacao': '', 'personalidade': 'triste'},
+             "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'especificacao': '','personalidade': 'normal'},
+             "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'especificacao': 'do jogo Super Mario','personalidade': 'feliz'},
+             "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'especificacao': 'dos filmes de Star Wars','personalidade': 'zangado'},
+             "Feiticeira Escarlate": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'especificacao': 'da marvel nao explique o contexto', 'personalidade': 'triste'},
+             "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'especificacao': '', 'personalidade': 'feliz'}}
 
 
 global dic
