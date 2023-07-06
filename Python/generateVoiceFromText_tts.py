@@ -21,9 +21,7 @@ import requests
 from dotenv import load_dotenv
 import os
 
-# Serial + playAudio
-# from serial import Serial
-# from play_audio import playAudio
+# PlayAudio
 from sendViaSerial_andPlayAudio import mainPlayAudio
 
 # Global variables
@@ -33,6 +31,14 @@ password = os.getenv("PASSWORD_FAKEYOU")
 
 fy = fakeyou.FakeYou(verbose=True)
 fy.login(username, password)
+
+dictTipos = {"Robo": {'nome': 'Robo', 'idioma': 'portugues br', 'especificacao': '', 'personalidade': 'triste'},
+            "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'especificacao': '','personalidade': 'normal'},
+            "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'especificacao': 'do jogo Super Mario','personalidade': 'feliz'},
+            "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'especificacao': 'dos filmes de Star Wars','personalidade': 'zangado'},
+            "Feiticeira Escarlate": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'especificacao': 'da marvel nao explique o contexto', 'personalidade': 'triste'},
+            "Donald Trump": {'nome': 'Donald Trump (Angry)', 'idioma': 'ingles', 'especificacao': 'utilizando o mesmo tipo de discurso que ele utiliza nos discursos', 'personalidade': 'zangado'},
+            "Gato de Botas": {'nome': 'El Gato con Botas', 'idioma': 'espanhol', 'especificacao': '', 'personalidade': 'feliz'}}
 
 # global audioCreated, audio_path_replay
 # audioCreated = False
@@ -67,6 +73,17 @@ def getVoice_pyttsx3(responseChatGPT):
     return
 
 # 3. Fakeyou
+# def getJSON(model_name):
+#     voices = fy.list_voices()
+
+#     json_data = []
+#     for json_archive in zip(voices.json):
+#         json_data.append(json_archive[0])
+#         if json_archive[0]['user_ratings']['total_count'] >= 2 and json_archive[0]['user_ratings']['positive_count']/json_archive[0]['user_ratings']['total_count'] >= 0.9:
+#             if json_archive[0]['title'] == model_name:
+#                 return json_archive[0]['model_token']
+#     return ''
+
 def get_tts_token(model_name):
     voices = fy.list_voices()
 
@@ -77,6 +94,7 @@ def get_tts_token(model_name):
 
     for i in range(len(json_data)):
         data = json_data[i]
+        # print(data['title'])
         if (model_name.lower() == data['title'].lower() or model_name.lower() == data['maybe_suggested_unique_bot_command']):
             return data['model_token']
     return ''
@@ -161,10 +179,6 @@ def text2voice(mySerial, responseChatGPT, character):
 
     # global audioCreated, audio_path_replay
 
-    # Serial variable
-    # mySerial = Serial("COM12", baudrate=115200, timeout=0.1)
-    # mySerial = None
-
     # convert text to voice
     if (character == 'Robo'):
         getVoice_gtts(responseChatGPT)
@@ -180,7 +194,7 @@ def text2voice(mySerial, responseChatGPT, character):
         mainPlayAudio(mySerial, audio_path, character)
     else:
         # get tts_model_token
-        tts_model_token = get_tts_token(character)
+        tts_model_token = get_tts_token(dictTipos[character]['nome'])
 
         # compare to empty string
         if (tts_model_token != ''):
@@ -190,7 +204,7 @@ def text2voice(mySerial, responseChatGPT, character):
             # audio_path_replay = audio_path
             mainPlayAudio(mySerial, audio_path, character)
         else:
-            audioCreated = False
+            # audioCreated = False
             print("Modelo de voz não encontrado")
     return
 

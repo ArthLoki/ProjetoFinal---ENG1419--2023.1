@@ -9,14 +9,13 @@ audioPlaying = False
 
 global dictTipos
 
-dictTipos = {'Xuxa': {'nome': 'xuxa', 'idioma': 'portugues br', 'personalidade': 'feliz'}, 
-            'Robo': {'nome': 'Robo', 'idioma': 'portugues br', 'personalidade': 'triste'}, 
-            "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'personalidade': 'normal'},
-            "William Bonner": {'nome': 'William Bonner', 'idioma': 'portugues br', 'personalidade': 'cansado'},
-            "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'personalidade': 'feliz'},
-            "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'personalidade': 'zangado'}, 
-            "Elizabeth Olsen": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'personalidade': 'triste'},
-            "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'personalidade': 'feliz'}}
+dictTipos = {"Robo": {'nome': 'Robo', 'idioma': 'portugues br', 'especificacao': '', 'personalidade': 'triste'},
+            "Mulher 1": {'nome': 'Mulher 1', 'idioma': 'portugues br', 'especificacao': '','personalidade': 'normal'},
+            "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'especificacao': 'do jogo Super Mario','personalidade': 'feliz'},
+            "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'especificacao': 'dos filmes de Star Wars','personalidade': 'zangado'},
+            "Feiticeira Escarlate": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'especificacao': 'da marvel nao explique o contexto', 'personalidade': 'triste'},
+            "Donald Trump": {'nome': 'Donald Trump (Angry)', 'idioma': 'ingles', 'especificacao': 'utilizando o mesmo tipo de discurso que ele utiliza nos discursos', 'personalidade': 'zangado'},
+            "Gato de Botas": {'nome': 'El Gato con Botas', 'idioma': 'espanhol', 'especificacao': '', 'personalidade': 'feliz'}}
 
 def playAudio(mySerial, mx, audio_path, character):
     global audioPlaying, dictTipos
@@ -50,12 +49,8 @@ def playAudio(mySerial, mx, audio_path, character):
 
                     # Audio
                     text2sendViaSerial = "falando " + (diff * "0") + energy_str + "\n"
-                    print(text2sendViaSerial)
+                    # print(text2sendViaSerial)
                     mySerial.write(text2sendViaSerial.encode("UTF-8"))
-
-                    # serial_thread = Thread(target=getFromSerial, args = [mySerial])
-                    # serial_thread.daemon = True
-                    # serial_thread.start()
 
                 i += 1
         else:
@@ -71,13 +66,6 @@ def endAudio(mySerial, mx):
     mx.music.stop()
     mx.quit()
     return
-
-# def getFromSerial(mySerial):
-#     # while True:
-#     if mySerial != None:
-#         textReceived = mySerial.readline().decode().strip()
-#         print("Texto recebido pela Serial: ", textReceived)
-#     sleep(0.1)
 
 def getAudioPlaying():
     global audioPlaying

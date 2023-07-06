@@ -33,8 +33,8 @@ dictTipos = {"Robo": {'nome': 'Robo', 'idioma': 'portugues br', 'especificacao':
             "Mario Bros": {'nome': 'mario', 'idioma': 'ingles', 'especificacao': 'do jogo Super Mario','personalidade': 'feliz'},
             "Darth Vader": {'nome': 'Darth Vader (New, Version 2.0)', 'idioma': 'ingles', 'especificacao': 'dos filmes de Star Wars','personalidade': 'zangado'},
             "Feiticeira Escarlate": {'nome': 'Elizabeth Olsen', 'idioma': 'ingles', 'especificacao': 'da marvel nao explique o contexto', 'personalidade': 'triste'},
-            "Donald Trump": {'nome': 'angrydonaldtrump', 'idioma': 'ingles', 'especificacao': 'utilizando o mesmo tipo de discurso que ele utiliza nos discursos', 'personalidade': 'zangado'},
-            "Gato de Botas": {'nome': 'elgatoconbotas', 'idioma': 'espanhol', 'especificacao': '', 'personalidade': 'feliz'}}
+            "Donald Trump": {'nome': 'Donald Trump (Angry)', 'idioma': 'ingles', 'especificacao': 'utilizando o mesmo tipo de discurso que ele utiliza nos discursos', 'personalidade': 'zangado'},
+            "Gato de Botas": {'nome': 'El Gato con Botas', 'idioma': 'espanhol', 'especificacao': '', 'personalidade': 'feliz'}}
 
 
 global dic
@@ -138,7 +138,7 @@ def streaming():
             angulo_str = str(int(180 - angulo))
             diff = 3 - len(angulo_str)
             textSerialAngulo = "olho " + (diff * "0") + angulo_str + "\n"
-            # mySerial.write(textSerialAngulo.encode("UTF-8"))
+            mySerial.write(textSerialAngulo.encode("UTF-8"))
 
 def deteccao():
     global imagem, faces
@@ -160,7 +160,8 @@ def deteccao():
 def chamando_streaming():
     deteccao()
     janela.after(50, chamando_streaming)
-    
+    return
+
 def tudo_func():
     global aplicativo, botau1,textobotao1,texto1, tipo
     global mySerial
@@ -168,16 +169,16 @@ def tudo_func():
     if aplicativo != None:
         aplicativo.terminate()
         aplicativo = None
-        
+
         print("\n\n Parando gravação de áudio...\n\n")
-        
+    
         system("ffmpeg -y -i voiceFiles/questions/question.wav -acodec libopus voiceFiles/questions/question.ogg")
 
         print("\n\n Convertendo o audio em texto: \n\n")
-        
+
         botau1 = False
         textobotao1.destroy()
-        
+
         textobotao1 = Label(janela, text="Processando ...", font=("Arial", 16))
         textobotao1.pack()
         textobotao1.place(x=40, y=70)
@@ -202,7 +203,7 @@ def tudo_func():
     texto2.config(state='normal')    
     texto2.insert(END, respostaChatGPT)
     # texto2.config(state='disable')
-    openai_thread = Thread(target = text2voice, args = [mySerial, respostaChatGPT, dictTipos[tipo.get()]['nome']])
+    openai_thread = Thread(target = text2voice, args = [mySerial, respostaChatGPT, tipo.get()])
     openai_thread.start()
 
 def whisper_func():
@@ -247,7 +248,7 @@ def resposta():
     texto_final = texto1.get("1.0", END)
     print(texto_final)
     if tipo.get() != "Robo":
-        texto_final = "Responda a mensagem a seguir fingindo ser {} falando no idioma {}. Lembrando não sai do seu papel de interpretar {}.".format(tipo.get(),dictTipos[tipo.get()]['especificacao'],dictTipos[tipo.get()]['idioma'],tipo.get()) + texto_final
+        texto_final = "Responda a mensagem a seguir fingindo ser {} {} falando no idioma {}. Lembrando não sai do seu papel de interpretar {}.".format(tipo.get(),dictTipos[tipo.get()]['especificacao'],dictTipos[tipo.get()]['idioma'],tipo.get()) + texto_final
     respostaChatGPT = getResponseChatGPT(texto_final)
     texto2.config(state='normal')
     texto2.delete("1.0", END)
@@ -258,7 +259,7 @@ def resposta():
     
 def voz_resposta():
     respostaChatGPT = texto2.get("1.0", END)
-    openai_thread = Thread(target = text2voice, args = [mySerial, respostaChatGPT, dictTipos[tipo.get()]['nome']])
+    openai_thread = Thread(target = text2voice, args = [mySerial, respostaChatGPT, tipo.get()])
     openai_thread.start()
     
     
